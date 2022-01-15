@@ -1,4 +1,4 @@
 module.exports = {
   homePath: "/home/incognito",
-  shardName: ["beacon", "shard5", "shard6"],
+  shardNames: ["beacon", "shard5", "shard6"],
 };
