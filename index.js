@@ -37,7 +37,7 @@ const { homePath, instructions } = require("./constants");
       console.log();
     }
 
-    console.log("\nMake sure all files are editable to the incognito user.");
+    console.log("\nMaking sure all files are editable to the incognito user.");
     await chown(["incognito:incognito", homePath, "-R"]);
 
     console.log("\nStarting containers again");
