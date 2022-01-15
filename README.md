@@ -1,5 +1,10 @@
 # Disclamer
-Do not run this code if one or more of your nodes are in committee. The scrpit will run in less than a minute, it is really fast, so I guess there is no problem if it is about to enter committee in the next epoch, but do it at your own risk.
+Do not run this code if one or more of your nodes are in committee. The scrpit will run in less than a minute,
+it is really fast, so I guess there is no problem if it is about to enter committee in the next epoch, but do it
+at your own risk.
+
+The script will stop and start the docker containers of every node implicated, which means every node that is either
+spicified as a `fromNodeIndex` or `toNodesIndex`.
 
 # Dependencies
 1. Nodejs.
