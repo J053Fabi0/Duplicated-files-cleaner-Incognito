@@ -1,15 +1,20 @@
-const { getNodesIndexes, stopAllContainers, docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
+const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
 const { homePath, instructions } = require("./constants");
+
+const allImplicatedNodes = (() => {
+  const toReturn = [];
+  for (const { fromNodeIndex, toNodesIndex } of instructions)
+    for (const node of [fromNodeIndex, ...toNodesIndex]) if (!toReturn.includes(node)) toReturn.push(node);
+
+  return toReturn;
+})();
 
 1;
 (async () => {
   try {
     console.log("Stopping containers.");
-    try {
-      console.log(await stopAllContainers());
-    } catch (_) {
-      console.log("No containers active. Skipping this step.");
-    }
+    for (const nodeIndex of allImplicatedNodes)
+      console.log(await docker(["container", "stop", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
     console.log();
 
     for (const { fromNodeIndex, toNodesIndex, shardName } of instructions) {
@@ -37,13 +42,14 @@ const { homePath, instructions } = require("./constants");
       console.log();
     }
 
-    console.log("\nMaking sure all files are editable to the incognito user.");
+    console.log("Making sure all files are editable to the incognito user.");
     await chown(["incognito:incognito", homePath, "-R"]);
 
     console.log("\nStarting containers again");
-    const allNodesIndexes = await getNodesIndexes();
-    for (const nodeIndex of allNodesIndexes)
+    for (const nodeIndex of allImplicatedNodes)
       console.log(await docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
+
+    console.log("\nDone!");
   } catch (e) {
     console.error(e);
   }
