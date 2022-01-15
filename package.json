@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "JoseFabio.com",
+  "license": "GNU v3",
+  "dependencies": {
+    "axios": "^0.24.0"
+  }
 }

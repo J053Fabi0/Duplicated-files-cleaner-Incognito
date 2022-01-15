@@ -1,16 +1,18 @@
 # Disclamer
-Do not run this code if one or more of your nodes are in committee. The scrpit will run in less than a minute,
-it is really fast, so I guess there is no problem if it is about to enter committee in the next epoch, but do it
-at your own risk.
+If you decide not to provide the public keys of your nodes inside constants.js, do not run this scrpit if one or more of
+your nodes are in committee. In case it is about to enter committee, like in 1 epoch, I wouldn't worry, because this
+script is really fast: it will probably run in less than 1 minute.
 
-The script will stop and start the docker containers of every node implicated, which means every node that is either
-spicified as a `fromNodeIndex` or `toNodesIndex`.
+Provide the public keys if you don't want to worry about checking if one ore more nodes is in committee; all nodes that
+are in committee will be skipped and its containers wont be stopped.
 
 # Dependencies
-1. Nodejs.
+1. node.
+1. npm.
 
 # How to use
 
 1. Clone the repository in your server and change directory to it.
+1. Run `npm i`.
 1. Modify `constants.js` accordingly.
-1. Run `node index.js`.
+1. Run `node index.js` every time you want.
