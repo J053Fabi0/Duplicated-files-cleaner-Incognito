@@ -1,5 +1,5 @@
 const { getNodesIndexes, stopAllContainers, docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
-const { homePath, shardName } = require("./constants");
+const { homePath, shardNames } = require("./constants");
 
 1;
 (async () => {
@@ -17,18 +17,20 @@ const { homePath, shardName } = require("./constants");
     for (const toNodeIndex of toNodesIndex) {
       console.log("Prossesing node", toNodeIndex);
 
-      const toNodePath = `${homePath}/node_data_${toNodeIndex}/mainnet/block/${shardName}`;
-      const fromNodePath = `${homePath}/node_data_${fromNodeIndex}/mainnet/block/${shardName}`;
+      for (const shardName of shardNames) {
+        const toNodePath = `${homePath}/node_data_${toNodeIndex}/mainnet/block/${shardName}`;
+        const fromNodePath = `${homePath}/node_data_${fromNodeIndex}/mainnet/block/${shardName}`;
 
-      // Create the hard links.
-      await rm(["-rf", toNodePath]);
-      await cp(["-al", fromNodePath, toNodePath]);
+        // Create the hard links.
+        await rm(["-rf", toNodePath]);
+        await cp(["-al", fromNodePath, toNodePath]);
 
-      // Copy those files that must not be linked for each node.
-      const filesToCopy = await getExtraFiles(toNodePath);
-      for (const fileToCopy of filesToCopy) {
-        await rm([`${toNodePath}/${fileToCopy}`]);
-        await cp([`${fromNodePath}/${fileToCopy}`, toNodePath]);
+        // Copy those files that must not be linked for each node.
+        const filesToCopy = await getExtraFiles(toNodePath);
+        for (const fileToCopy of filesToCopy) {
+          await rm([`${toNodePath}/${fileToCopy}`]);
+          await cp([`${fromNodePath}/${fileToCopy}`, toNodePath]);
+        }
       }
     }
 
