@@ -1,7 +1,5 @@
 const { getNodesIndexes, stopAllContainers, docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
-
-const homePath = "/home/incognito";
-const shardName = "beacon";
+const { homePath, shardName } = require("./constants");
 
 1;
 (async () => {
