@@ -2,7 +2,7 @@ module.exports = {
   homePath: "/home/incognito",
 
   // Important to set these, as they will prevent this scrpit from stopping a node which is in committee.
-  // They are optional; you can leave publicKeys as an empty object: {}.
+  // They are optional; you can omit any or leave it as an empty object: {}.
   publicKeys: {
     0: "12kMqNK27szkzHo6bz3dvQ3zsZsDUUgaL8ZEB29jdvdUYcRgt2H",
     1: "12JgooXC1Cdn2XjhAGKuEL5eL7hN7JjbXvNe92GTMQHCuKcKYez",
