@@ -14,5 +14,6 @@ are in committee will be skipped and its containers wont be stopped.
 
 1. Clone the repository in your server and change directory to it.
 1. Run `npm i`.
-1. Modify `constants.js` accordingly.
-1. Run `node index.js` every time you want.
+1. Rename `constants.example.js` to `constants.js`.
+1. Modify `constants.js` to suit your needs.
+1. Now you can run `node index.js` every time you want.
