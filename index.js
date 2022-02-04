@@ -1,5 +1,5 @@
 const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
-const { homePath, instructions, publicKeys } = require("./constants");
+const { homePath, instructions, publicKeys = [] } = require("./constants");
 const { getNodeRole } = require("./utils/nodesRPCs");
 
 const allImplicatedNodes = (() => {
