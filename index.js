@@ -69,14 +69,17 @@ const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
     console.groupEnd();
 
     console.log("\nDone!");
+
+    saveDatabaseAndExit();
   } catch (e) {
     console.error(e);
   }
 })();
 
-require("./utils/customDeath")(() =>
+require("./utils/customDeath")(saveDatabaseAndExit);
+function saveDatabaseAndExit() {
   db.saveDatabase((err) => {
     if (err) console.error(err);
     process.exit(0);
-  })
-);
+  });
+}
