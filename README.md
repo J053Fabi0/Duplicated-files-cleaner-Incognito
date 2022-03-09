@@ -5,7 +5,7 @@ If you have used this script before, you must to migrate the old configuration t
 
 # Dependencies
 
-1. node.
+1. node 12.9.0 or higher.
 1. npm.
 
 # How to use
