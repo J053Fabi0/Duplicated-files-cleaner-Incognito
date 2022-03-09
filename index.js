@@ -1,40 +1,40 @@
+const db = require("./db/initDatabase");
+const { homePath } = require("./constants");
+const getNodesInfo = require("./getNodesInfo");
+const getInstructions = require("./utils/getInstructions");
+const { nodesDB } = require("./db/collections/collections");
 const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
-const { homePath, instructions, publicKeys = [] } = require("./constants");
-const { getNodeRole } = require("./utils/nodesRPCs");
 
-const allImplicatedNodes = (() => {
-  const toReturn = [];
-  for (const { fromNodeIndex, toNodesIndex } of instructions)
-    for (const node of [fromNodeIndex, ...toNodesIndex]) if (!toReturn.includes(node)) toReturn.push(node);
-
-  return toReturn;
-})();
+const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
 
 1;
 (async () => {
   try {
+    console.log("Getting instructions.\n");
+    const instructions = await getInstructions();
+
     console.group("Getting roles.");
-    const roles = await getNodesRoles();
+    const roles = await getNodesInfo();
     console.table(roles);
     console.groupEnd();
 
     console.group("\nStopping containers.");
-    for (const nodeIndex of allImplicatedNodes)
-      if (roles[nodeIndex] !== 2) {
+    for (const nodeIndex of allNodesIndex)
+      if (roles[nodeIndex] !== "COMMITTEE") {
         console.log(await docker(["container", "stop", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
       } else console.log(`Skipping node ${nodeIndex} because it's in committee.`);
     console.groupEnd();
     console.log();
 
     for (const { fromNodeIndex, toNodesIndex, shardName } of instructions) {
-      if (roles[fromNodeIndex] === 2) {
-        console.log(`Skipping ${shardName} because the fromNode ${fromNodeIndex} is in committee.\n`);
+      if (roles[fromNodeIndex] === "COMMITTEE") {
+        console.log(`Skipping ${shardName} because the fromNode ${fromNodeIndex} it's in committee.\n`);
         continue;
       }
       console.group(shardName);
 
       for (const toNodeIndex of toNodesIndex) {
-        if (roles[toNodeIndex] === 2) {
+        if (roles[toNodeIndex] === "COMMITTEE") {
           console.log(`Skipping node ${toNodeIndex} because it's in committee.`);
           continue;
         }
@@ -64,7 +64,7 @@ const allImplicatedNodes = (() => {
     await chown(["incognito:incognito", homePath, "-R"]);
 
     console.group("\nStarting containers.");
-    for (const nodeIndex of allImplicatedNodes)
+    for (const nodeIndex of allNodesIndex)
       console.log(await docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
     console.groupEnd();
 
@@ -74,17 +74,9 @@ const allImplicatedNodes = (() => {
   }
 })();
 
-async function getNodesRoles() {
-  const roles = {};
-  for (const nodeIndex of allImplicatedNodes)
-    roles[nodeIndex] =
-      typeof publicKeys[nodeIndex] === "string"
-        ? getNodeRole(publicKeys[nodeIndex])
-            .then((role) => (roles[nodeIndex] = role))
-            .catch(() => (roles[nodeIndex] = -1))
-        : -1;
-
-  await Promise.allSettled(Object.values(roles));
-
-  return roles;
-}
+require("./utils/customDeath")(() =>
+  db.saveDatabase((err) => {
+    if (err) console.error(err);
+    process.exit(0);
+  })
+);

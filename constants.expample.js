@@ -1,27 +1,15 @@
 module.exports = {
   homePath: "/home/incognito",
 
-  // Important to set these, as they will prevent this scrpit from stopping a node which is in committee.
-  // They are optional; you can omit any or leave it as an empty object: {}.
-  publicKeys: {
-    0: "12kMqNK27szkzHo6bz3dvQ3zsZsDUUgaL8ZEB29jdvdUYcRgt2H",
-    1: "12JgooXC1Cdn2XjhAGKuEL5eL7hN7JjbXvNe92GTMQHCuKcKYez",
-    2: "154p5TvLzRAcjroEzwWjUDmsHLtAxDFBUEbnHeCsU21h138Z8u",
+  // The key is for the index they occupy as a docker container.
+  // The value is the validator public key.
+  validatorPublicKeys: {
+    0: "14nUEc4Yz5baih5bGgkTpemK2WUaA7LjCsGzZBgSSLTUypsya2hfPNVK1GjB8rT2mKRa42E1KcWi1X1u5xvxSTra8zopir3TXycSA3d1wKxDPTVZiqQCi5q39f49yCFQtTyfnL47BoB1W2bGQckC6fNwv5rTN5fz5jpr5EmoiRhB6MU4EPjrF",
+    1: "1BoLvywGDC8TUxx4aMQ5fwKhqa4zgDKMQYwLLbLeX53v6xGXYC4k3WnJvakTeKdbkHDcgD6Z9eMKhow85AFoiE3t1XKrimbBH4wEbMYqCBRRJ2bAkFK1cLYczB91iFbxfuMAE45AyPPJirYks2ZEJA8aZnrg6wtj7vMBynMX11qpxB6yZw8XU",
+    2: "15dYRkqW9UFc9yJ43q88Hj9bFqXdQRUTXQtf7d3NnnBajnYn5Tyw9MGPBKMCd5xyBinpiFurxmFa7EcxxrdvmCvLwqNgDK6wtKaPtxz6FJdhmaMjpv7Ehsg3XTAz6gJWaHcUk6mF95cSVZP5WdyHWtMQAUAqgYNS8b46KsrphD9PCtQPdgTAY",
+    3: "1NWTg33BhfHQtG2gZXc3T7HK2kAM1zPtSjDfTuybEvBktsHhyEP9uN3stfLFGHdu2MPCNudcz21r84NKr7spNhRUQagRRENA4RXDDGADWHZhrF3dj7FB5igdBPMkWLVu8QgLSenrMBx6fVrHU6dKvnXsu8xHe7LE4X7SQPBNHu5GRxxLx8vka",
+    4: "1Ehsgg9AsFp1Hwisv49XmAwNjV5MrnBbhGKjk3Vm7Vu7tWs2fX8dmJRTjAc6xPzbMmJYWfEvmqJVt9kia85yFU9gdZ9habq7RdmFs8oJ4d63ubiZXnFrNKABxbwRX2TEUYrpDWr4pTr2J2Q1jMvBkUdSh9knTZHQNThHbb43MzdxHbThAxVPP",
+    5: "1A1Yfcq9MhrFfbVAQKG5BigUsD9EtpgPCoGNMbqqjKr143azVoMAeAvduMcZjdd5FMw3hvpu5ah8Gxj5H3MfzSw9wcfdrd6mEBWVYRUJLUmeuEXM78vUcQHWSHYk3DmyVY39xCq5ohTKd7zq8ukqhcLRjk5TouXQevuEbaGrJqgXVMpikUujt",
+    6: "18r4KwUYjwpZuNVQtpwf7s6qzFSvjMT1ucLVH1oksWMYvUcJt9xgDHtgsvdQ7FUrj5cuTthrS29RwTFQTW4bqMEgY2SmTsFmuPxsDGRJ2a9nKtaGQWKhBH2RpYDENVpmKi6EKXqHjGFnayg1ixEKSmsW57DPkCSoPmcTUrBBgmyXRoY8szZ1U",
   },
-
-  // Add as many instructions as you need.
-  instructions: [
-    {
-      // This will copy the beacon folder from node 0 to nodes 1 and 2.
-      shardName: "beacon",
-      fromNodeIndex: "0",
-      toNodesIndex: ["1", "2"],
-    },
-    {
-      // Since nodes 1 and 2 use shard5, one can copy that folder from node 1 to 2.
-      shardName: "shard5",
-      fromNodeIndex: "1",
-      toNodesIndex: ["2"],
-    },
-  ],
 };
