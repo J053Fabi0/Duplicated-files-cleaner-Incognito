@@ -1,3 +1,4 @@
 constants.js
 Session.vim
 node_modules
+db/database.db
