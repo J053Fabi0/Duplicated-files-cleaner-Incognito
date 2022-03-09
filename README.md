@@ -1,7 +1,7 @@
 The validator public keys inside `constants.js` are mandatory for this script to work. They are used to get the
 shard each node is in and the current committee role, to avoid stopping nodes wich are mining.
 
-If you have used this script before, you must to migrate the old configuration to the newer one.
+If you have used this script before, you must migrate the old configuration to the newer one.
 
 # Dependencies
 
