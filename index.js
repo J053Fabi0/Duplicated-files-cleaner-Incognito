@@ -5,8 +5,6 @@ const getInstructions = require("./utils/getInstructions");
 const { nodesDB } = require("./db/collections/collections");
 const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
 
-const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
-
 1;
 (async () => {
   try {
@@ -19,6 +17,8 @@ const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
     console.table(roles);
     console.groupEnd();
 
+    const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
+
     console.group("\nStopping containers.");
     for (const nodeIndex of allNodesIndex)
       if (roles[nodeIndex] !== "COMMITTEE") {
@@ -26,7 +26,6 @@ const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
       } else console.log(`Skipping node ${nodeIndex} because it's in committee.`);
     console.groupEnd();
     console.log();
-    return;
 
     for (const { fromNodeIndex, toNodesIndex, shardName } of instructions) {
       if (roles[fromNodeIndex] === "COMMITTEE") {
