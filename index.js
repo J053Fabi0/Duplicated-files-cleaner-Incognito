@@ -12,11 +12,13 @@ const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
   try {
     console.log("Getting instructions.\n");
     const instructions = await getInstructions();
+    console.log(instructions);
 
     console.group("Getting roles.");
     const roles = await getNodesInfo();
     console.table(roles);
     console.groupEnd();
+    return;
 
     console.group("\nStopping containers.");
     for (const nodeIndex of allNodesIndex)
