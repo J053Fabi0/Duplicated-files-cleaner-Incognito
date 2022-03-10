@@ -5,18 +5,19 @@ const getInstructions = require("./utils/getInstructions");
 const { nodesDB } = require("./db/collections/collections");
 const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
 
-const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
-
 1;
 (async () => {
   try {
-    console.log("Getting instructions.\n");
+    console.log("Getting instructions.");
     const instructions = await getInstructions();
+    console.log(instructions);
 
-    console.group("Getting roles.");
+    console.group("\nGetting roles.");
     const roles = await getNodesInfo();
     console.table(roles);
     console.groupEnd();
+
+    const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
 
     console.group("\nStopping containers.");
     for (const nodeIndex of allNodesIndex)

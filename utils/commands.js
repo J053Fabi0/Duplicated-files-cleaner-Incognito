@@ -1,5 +1,5 @@
 const binaryWrapper = require("./binaryWrapper");
-const docker = binaryWrapper("docker", "/bin");
+const docker = binaryWrapper("docker", false);
 const chown = binaryWrapper("chown", false);
 const cp = binaryWrapper("cp", false);
 const rm = binaryWrapper("rm", false);
