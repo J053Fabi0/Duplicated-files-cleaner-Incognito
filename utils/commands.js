@@ -1,9 +1,9 @@
 const binaryWrapper = require("./binaryWrapper");
 const docker = binaryWrapper("docker", "/bin");
-const chown = binaryWrapper("chown", "/bin");
-const cp = binaryWrapper("cp", "/bin");
-const rm = binaryWrapper("rm", "/bin");
-const ls = binaryWrapper("ls", "/bin");
+const chown = binaryWrapper("chown", false);
+const cp = binaryWrapper("cp", false);
+const rm = binaryWrapper("rm", false);
+const ls = binaryWrapper("ls", false);
 
 module.exports.docker = docker;
 module.exports.chown = chown;
