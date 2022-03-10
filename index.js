@@ -10,15 +10,14 @@ const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
 1;
 (async () => {
   try {
-    console.log("Getting instructions.\n");
+    console.log("Getting instructions.");
     const instructions = await getInstructions();
     console.log(instructions);
 
-    console.group("Getting roles.");
+    console.group("\nGetting roles.");
     const roles = await getNodesInfo();
     console.table(roles);
     console.groupEnd();
-    return;
 
     console.group("\nStopping containers.");
     for (const nodeIndex of allNodesIndex)
@@ -27,6 +26,7 @@ const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
       } else console.log(`Skipping node ${nodeIndex} because it's in committee.`);
     console.groupEnd();
     console.log();
+    return;
 
     for (const { fromNodeIndex, toNodesIndex, shardName } of instructions) {
       if (roles[fromNodeIndex] === "COMMITTEE") {
