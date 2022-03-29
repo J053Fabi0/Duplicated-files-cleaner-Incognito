@@ -11,6 +11,7 @@ const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
     console.log("Getting instructions.");
     const instructions = await getInstructions();
     console.log(instructions);
+    return;
 
     console.group("\nGetting roles.");
     const roles = await getNodesInfo();

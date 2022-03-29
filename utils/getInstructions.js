@@ -1,7 +1,7 @@
 const { validatorPublicKeys } = require("../constants");
 const { nodesDB } = require("../db/collections/collections");
 const checkIfAllShardsHaveSeed = require("./checkIfAllShardsHaveSeed");
-const checkIfConstantsHasChanged = require("./checkIfConstantsHasChanged");
+const checkIfConstantsHasChanged = require("./checkIfConstantsHaveChanged");
 
 module.exports = async () => {
   await checkIfConstantsHasChanged();

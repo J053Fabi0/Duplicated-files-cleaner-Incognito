@@ -45,12 +45,13 @@ async function checkIfAllShardsHaveSeed() {
   }
 }
 
-const getIfShardIsSync = async (validatorPublicKey, shardID) =>
-  shardID === -1
-    ? +(await axios.post("https://monitor.incognito.org/pubkeystat/sync", { mpk: validatorPublicKey })).data.Beacon
-        .IsSync
-    : +(await axios.post("https://monitor.incognito.org/pubkeystat/sync", { mpk: validatorPublicKey })).data.Shard[
-        shardID
-      ].IsSync;
+const getIfShardIsSync = async (validatorPublicKey, shardID) => {
+  const { SyncState } = (
+    await axios.post("https://monitor.incognito.org/pubkeystat/stat", { mpk: validatorPublicKey })
+  ).data[0];
+
+  // If the shard is the beacon, then either shard syncing or latest will mean it is fully synced.
+  return shardID === -1 ? SyncState === "SHARD SYNCING" || SyncState === "LATEST" : SyncState === "LATEST";
+};
 
 module.exports = checkIfAllShardsHaveSeed;
