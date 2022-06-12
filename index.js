@@ -10,6 +10,7 @@ const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
   try {
     console.log("Getting instructions.");
     const instructions = await getInstructions();
+    console.log("Instructions:");
     console.log(instructions);
 
     console.group("\nGetting roles.");
@@ -66,7 +67,8 @@ const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
 
     console.group("\nStarting containers.");
     for (const nodeIndex of allNodesIndex)
-      console.log(await docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
+      if (roles[nodeIndex] !== "COMMITTEE")
+        console.log(await docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
     console.groupEnd();
 
     console.log("\nDone!");

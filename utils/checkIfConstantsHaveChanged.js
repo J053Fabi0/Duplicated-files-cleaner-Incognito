@@ -1,12 +1,12 @@
 const axios = require("axios");
-const { validatorPublicKeys } = require("../constants");
+const { validatorPublicKeys = {} } = require("../constants");
 const { nodesDB } = require("../db/collections/collections");
 
 module.exports = async function () {
   const indexesInConstants = Object.keys(validatorPublicKeys);
 
-  const allDataInDB = nodesDB.find({});
   const publicKeysInDB = {};
+  const allDataInDB = nodesDB.find({});
   for (const { validatorPublicKey } of allDataInDB) publicKeysInDB[validatorPublicKey] = false;
 
   // Add any new node that is in the constants file needs to be added to the DB.

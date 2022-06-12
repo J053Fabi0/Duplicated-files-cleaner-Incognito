@@ -1,4 +1,3 @@
-const { validatorPublicKeys } = require("../constants");
 const { nodesDB } = require("../db/collections/collections");
 const checkIfAllShardsHaveSeed = require("./checkIfAllShardsHaveSeed");
 const checkIfConstantsHasChanged = require("./checkIfConstantsHaveChanged");
