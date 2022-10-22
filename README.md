@@ -18,6 +18,7 @@ There are 3 ways to set `constants.ts`:
 # How to use
 
 1. Clone the repository in your server and change directory to it.
+1. Change to this branch with `git checkout deno`.
 1. Copy the `constants.exampleX.ts` you want to `constants.ts`: example `cp constants.example1.ts constants.ts`.
 1. Modify `constants.ts` to suit your needs. The validator public keys are needed.
 1. Run `deno task run`.
