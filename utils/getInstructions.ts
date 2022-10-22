@@ -6,11 +6,11 @@ import checkIfAllShardsHaveSeed from "./checkIfAllShardsHaveSeed.ts";
 import checkIfConstantsHaveChanged from "./checkIfConstantsHaveChanged.ts";
 
 export default async function getInstructions() {
-  await checkIfConstantsHaveChanged();
-  await checkIfAllShardsHaveSeed();
-
   const instructions: Instruction[] = [];
   if ("instructions" in constants && constants.instructions instanceof Array) return constants.instructions;
+
+  await checkIfConstantsHaveChanged();
+  await checkIfAllShardsHaveSeed();
 
   for (let i = 0; i <= 7; i++) {
     const seed = nodesDB.findOne({ shardID: i as Shards, shardSeed: true });
