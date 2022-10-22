@@ -3,7 +3,6 @@ import constants from "./constants.ts";
 import getNodesInfo from "./getNodesInfo.ts";
 import getInstructions from "./utils/getInstructions.ts";
 import { nodesDB } from "./db/collections/collections.ts";
-import repeatUntilNoError from "./utils/repeatUntilNoError.ts";
 import { docker, rm, cp, chown, getExtraFiles } from "./utils/commands.ts";
 
 const { homePath } = constants;
@@ -24,7 +23,7 @@ try {
   console.group("\nStopping containers.");
 
   // Stop extra dockers
-  if ("extraDocker" in constants && constants.extraDockers instanceof Array)
+  if (constants.extraDockers instanceof Array)
     for (const extraDocker of constants.extraDockers) console.log(await docker(extraDocker, "stop"));
   // Stop nodes
   for (const nodeIndex of allNodesIndex)
@@ -81,7 +80,7 @@ try {
 
   console.group("\nStarting containers.");
   // Start extra dockers
-  if ("extraDocker" in constants && constants.extraDockers instanceof Array)
+  if (constants.extraDockers instanceof Array)
     for (const extraDocker of constants.extraDockers) console.log(await docker(extraDocker, "start"));
   // Start nodes
   for (const nodeIndex of allNodesIndex)
