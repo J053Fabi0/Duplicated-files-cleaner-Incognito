@@ -3,6 +3,7 @@ import constants from "./constants.ts";
 import getNodesInfo from "./getNodesInfo.ts";
 import getInstructions from "./utils/getInstructions.ts";
 import { nodesDB } from "./db/collections/collections.ts";
+import repeatUntilNoError from "./utils/repeatUntilNoError.ts";
 import { docker, rm, cp, chown, getExtraFiles } from "./utils/commands.ts";
 
 const { homePath } = constants;
@@ -29,11 +30,14 @@ try {
   console.groupEnd();
   console.log();
 
-  for (const { fromNodeIndex, toNodesIndex, shardName } of instructions) {
-    if (roles[fromNodeIndex] === "COMMITTEE") {
-      console.log(`Skipping ${shardName} because the fromNode ${fromNodeIndex} it's in committee.\n`);
-      continue;
-    }
+  for (const { toNodesIndex, shardName, ...from } of instructions) {
+    const fromNode = "fromNodeIndex" in from ? from.fromNodeIndex : from.fromPath;
+
+    if (typeof fromNode === "number")
+      if (roles[fromNode] === "COMMITTEE") {
+        console.log(`Skipping ${shardName} because the fromNode ${fromNode} it's in committee.\n`);
+        continue;
+      }
     console.group(shardName);
 
     for (const toNodeIndex of toNodesIndex) {
@@ -45,7 +49,8 @@ try {
       console.log("Prossesing node", toNodeIndex);
 
       const toNodePath = `${homePath}/node_data_${toNodeIndex}/mainnet/block/${shardName}`;
-      const fromNodePath = `${homePath}/node_data_${fromNodeIndex}/mainnet/block/${shardName}`;
+      const fromNodePath =
+        typeof fromNode === "number" ? `${homePath}/node_data_${fromNode}/mainnet/block/${shardName}` : fromNode;
 
       // Create the hard links.
       await rm(["-rf", toNodePath]);
@@ -64,12 +69,23 @@ try {
   }
 
   console.log("Making sure all files are editable to the incognito user.");
-  await chown(["incognito:incognito", homePath, "-R"]);
+  try {
+    await chown(["incognito:incognito", homePath, "-R"]);
+  } catch (e) {
+    console.error(e);
+  }
 
   console.group("\nStarting containers.");
   for (const nodeIndex of allNodesIndex)
     if (roles[nodeIndex] !== "COMMITTEE")
-      console.log(await docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
+      console.log(
+        await repeatUntilNoError(
+          () => docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]),
+          5,
+          undefined,
+          (e, i) => console.log(`Error on attempt ${i} of ${5} to start container inc_mainnet_${nodeIndex}:\n${e}`)
+        )
+      );
   console.groupEnd();
 
   console.log("\nDone!");
