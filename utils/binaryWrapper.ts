@@ -5,7 +5,11 @@ type BinaryWrapper = (
   workingDirectory?: string
 ) => <returnType>(args: string | string[] | number[], parser?: (d: string) => returnType) => Promise<returnType>;
 
-const binaryWrapper = (binaryName: string, workingDirectory = Deno.cwd()) =>
-  spawnPromise.bind(undefined, `${workingDirectory}/${binaryName}`);
+/**
+ * @param binaryName The name of the binary.
+ * @param directory The directory of the binary, without trailing slash. You could use Deno.cwd()
+ */
+const binaryWrapper = (binaryName: string, directory?: string) =>
+  spawnPromise.bind(undefined, directory ? `${directory}/${binaryName}` : binaryName);
 
 export default binaryWrapper as BinaryWrapper;
