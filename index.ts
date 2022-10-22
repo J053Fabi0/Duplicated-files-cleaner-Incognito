@@ -23,9 +23,13 @@ try {
 
   console.group("\nStopping containers.");
 
+  // Stop extra dockers
+  if ("extraDocker" in constants && constants.extraDockers instanceof Array)
+    for (const extraDocker of constants.extraDockers) console.log(await docker(extraDocker, "stop"));
+  // Stop nodes
   for (const nodeIndex of allNodesIndex)
     if (roles[nodeIndex] !== "COMMITTEE") {
-      console.log(await docker(["container", "stop", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]));
+      console.log(await docker(`inc_mainnet_${nodeIndex}`, "stop"));
     } else console.log(`Skipping node ${nodeIndex} because it's in committee.`);
   console.groupEnd();
   console.log();
@@ -76,16 +80,13 @@ try {
   }
 
   console.group("\nStarting containers.");
+  // Start extra dockers
+  if ("extraDocker" in constants && constants.extraDockers instanceof Array)
+    for (const extraDocker of constants.extraDockers) console.log(await docker(extraDocker, "start"));
+  // Start nodes
   for (const nodeIndex of allNodesIndex)
-    if (roles[nodeIndex] !== "COMMITTEE")
-      console.log(
-        await repeatUntilNoError(
-          () => docker(["container", "start", `inc_mainnet_${nodeIndex}`], (v) => v.split("\n")[0]),
-          5,
-          undefined,
-          (e, i) => console.log(`Error on attempt ${i} of ${5} to start container inc_mainnet_${nodeIndex}:\n${e}`)
-        )
-      );
+    if (roles[nodeIndex] !== "COMMITTEE") console.log(await docker(`inc_mainnet_${nodeIndex}`, "start"));
+
   console.groupEnd();
 
   console.log("\nDone!");

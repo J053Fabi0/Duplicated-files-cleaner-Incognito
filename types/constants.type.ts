@@ -18,6 +18,7 @@ export type ValidatorPublicKeys = Record<number, string>;
 
 export default interface Constants {
   homePath: string;
+  extraDockers?: string[];
   instructions?: Instruction[];
   validatorPublicKeys: ValidatorPublicKeys;
 }
