@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "lokijs": "https://esm.sh/lokijs@1.5.12",
+    "axiod": "https://deno.land/x/axiod@0.26.2/mod.ts",
+    "node": "https://deno.land/std@0.160.0/node/module.ts",
+    "streams": "https://deno.land/std@0.160.0/streams/mod.ts"
+  }
+}
