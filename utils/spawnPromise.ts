@@ -8,6 +8,8 @@ export const spawnPromise = async <returnType>(
   if (!(args instanceof Array)) args = [args];
   args = args.map((a) => a.toString());
 
+  console.log(`${command} ${args.join(" ")}`);
+
   const process = Deno.run({ cmd: [command, ...args], stderr: "piped", stdout: "piped" });
 
   const stderr: string[] = [];
