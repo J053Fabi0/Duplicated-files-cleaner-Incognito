@@ -53,8 +53,8 @@ const { docker, rm, cp, chown, getExtraFiles } = require("./utils/commands");
         // Copy those files that must not be linked for each node.
         const filesToCopy = await getExtraFiles(toNodePath);
         for (const fileToCopy of filesToCopy) {
-          await rm([`${toNodePath}/${fileToCopy}`]);
-          await cp([`${fromNodePath}/${fileToCopy}`, toNodePath]);
+          await rm(["-r", `${toNodePath}/${fileToCopy}`]);
+          await cp(["-r", `${fromNodePath}/${fileToCopy}`, toNodePath]);
         }
       }
 
