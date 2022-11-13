@@ -7,9 +7,9 @@ import checkIfConstantsHaveChanged from "./checkIfConstantsHaveChanged.ts";
 
 export default async function getInstructions() {
   const instructions: Instruction[] = [];
-  if ("instructions" in constants && constants.instructions instanceof Array) return constants.instructions;
 
   await checkIfConstantsHaveChanged();
+  if ("instructions" in constants && constants.instructions instanceof Array) return constants.instructions;
   await checkIfAllShardsHaveSeed();
 
   for (let i = 0; i <= 7; i++) {
