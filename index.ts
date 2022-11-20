@@ -66,17 +66,13 @@ try {
         await rm(["-r", `${toNodePath}/${fileToCopy}`]);
         await cp(["-r", `${fromNodePath}/${fileToCopy}`, toNodePath]);
       }
+
+      // Make sure all files are editable by thy incognito user
+      await chown(["incognito:incognito", `${homePath}/node_data_${toNodeIndex}`, "-R"]);
     }
 
     console.groupEnd();
     console.log();
-  }
-
-  console.log("Making sure all files are editable to the incognito user.");
-  try {
-    await chown(["incognito:incognito", homePath, "-R"]);
-  } catch (e) {
-    console.error(e);
   }
 
   console.group("\nStarting containers.");
