@@ -13,14 +13,14 @@ There are 3 ways to set `constants.ts`:
 
 # Dependencies
 
-1. `deno`. See [installation guide](https://deno.land/manual/getting_started/installation).
-2. nano $HOME/.bashrc
-3. Add the following two lines at the end:
-`export DENO_INSTALL="/root/.deno"`
-`export PATH="$DENO_INSTALL/bin:$PATH"`
-4. Save and close
-5. `cd ~/`
-6. `. .bashrc` 
+1. `deno`. See [installation guide](https://deno.land/manual/getting_started/installation)
+
+## To add deno to the path, after installing it.
+1. `nano ~/.bashrc`.
+1. Add the following two lines at the end or edit PATH accordingly if it already exists: `export DENO_INSTALL="/root/.deno"` `export PATH="$DENO_INSTALL/bin:$PATH"`, but substitute `/root` with the directory in which deno is installed.
+1. Save and close.
+1. `cd`.
+1. `. .bashrc`.
 
 # How to use
 
