@@ -4,3 +4,4 @@ node_modules
 db/database.db
 
 constants.ts
+deno.lock

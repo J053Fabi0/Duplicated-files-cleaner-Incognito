@@ -95,6 +95,6 @@ try {
 function saveDatabaseAndExit() {
   db.saveDatabase((err) => {
     if (err) console.error(err);
-    process.exit(0);
+    Deno.exit(0);
   });
 }
