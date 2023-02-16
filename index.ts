@@ -1,11 +1,10 @@
 import db from "./db/initDatabase.ts";
 import constants from "./constants.ts";
-import getNodesInfo from "./getNodesInfo.ts";
+import getNodesStatus from "./utils/getNodesStatus.ts";
 import getInstructions from "./utils/getInstructions.ts";
-import { nodesDB } from "./db/collections/collections.ts";
 import { docker, rm, cp, chown, getExtraFiles } from "./utils/commands.ts";
 
-const { homePath } = constants;
+const { validatorPublicKeys = {}, homePath } = constants;
 
 try {
   console.log("Getting instructions.");
@@ -13,23 +12,26 @@ try {
   console.log("Instructions:");
   console.log(instructions);
 
-  console.group("\nGetting roles.");
-  const roles = await getNodesInfo();
-  console.table(roles);
+  console.group("\nGetting node info.");
+  const nodesInfo = await getNodesStatus();
+  console.table(nodesInfo);
   console.groupEnd();
 
-  const allNodesIndex = nodesDB.find({}).map(({ index }) => index);
+  const allNodesIndex = Object.keys(validatorPublicKeys).map((nodeIndex) => Number(nodeIndex));
 
   console.group("\nStopping containers.");
 
   // Stop extra dockers
-  if (constants.extraDockers instanceof Array)
-    for (const extraDocker of constants.extraDockers) console.log(await docker(extraDocker, "stop"));
+  if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "stop"));
   // Stop nodes
-  for (const nodeIndex of allNodesIndex)
-    if (roles[nodeIndex] !== "COMMITTEE") {
-      console.log(await docker(`inc_mainnet_${nodeIndex}`, "stop"));
-    } else console.log(`Skipping node ${nodeIndex} because it's in committee.`);
+  const dockerNamesToManipulate = allNodesIndex
+    .filter((i) => !nodesInfo[i].skip)
+    .map((nodeIndex) => `inc_mainnet_${nodeIndex}`);
+  console.log(await docker(dockerNamesToManipulate, "stop"));
+  // Tell which nodes were skipped
+  const nodesToSkip = allNodesIndex.filter((i) => nodesInfo[i].skip);
+  for (const nodeToSkip of nodesToSkip)
+    console.log(`Skipping node ${nodeToSkip} because it's in or about to be in committee.`);
   console.groupEnd();
   console.log();
 
@@ -38,15 +40,17 @@ try {
     const fromNode = "fromNodeIndex" in from ? from.fromNodeIndex : from.fromPath;
 
     if (typeof fromNode === "number")
-      if (roles[fromNode] === "COMMITTEE") {
-        console.log(`Skipping ${shardName} because the fromNode ${fromNode} it's in committee.\n`);
+      if (nodesInfo[fromNode].skip) {
+        console.log(
+          `Skipping ${shardName} because the fromNode ${fromNode} it's in or about to be in committee.\n`
+        );
         continue;
       }
     console.group(shardName);
 
     for (const toNodeIndex of toNodesIndex) {
-      if (roles[toNodeIndex] === "COMMITTEE") {
-        console.log(`Skipping node ${toNodeIndex} because it's in committee.`);
+      if (nodesInfo[toNodeIndex].skip) {
+        console.log(`Skipping node ${toNodeIndex} because it's in or about to be in committee.`);
         continue;
       }
 
@@ -77,11 +81,9 @@ try {
 
   console.group("\nStarting containers.");
   // Start extra dockers
-  if (constants.extraDockers instanceof Array)
-    for (const extraDocker of constants.extraDockers) console.log(await docker(extraDocker, "start"));
+  if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "start"));
   // Start nodes
-  for (const nodeIndex of allNodesIndex)
-    if (roles[nodeIndex] !== "COMMITTEE") console.log(await docker(`inc_mainnet_${nodeIndex}`, "start"));
+  console.log(await docker(dockerNamesToManipulate, "start"));
 
   console.groupEnd();
 

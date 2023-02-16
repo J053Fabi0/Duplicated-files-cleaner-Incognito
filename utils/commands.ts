@@ -6,9 +6,9 @@ export const rm = binaryWrapper("rm");
 export const ls = binaryWrapper("ls");
 
 const _docker = binaryWrapper("docker");
-export const docker = (name: string, action: "start" | "stop", maxRetries = 5) =>
+export const docker = (name: string | string[], action: "start" | "stop", maxRetries = 5) =>
   repeatUntilNoError(
-    () => _docker(["container", action, name], (v) => v.split("\n")[0]),
+    () => _docker(["container", action, ...(typeof name === "string" ? [name] : name)], (v) => v.slice(0, -1)),
     maxRetries,
     undefined,
     (e, i) => console.log(`Error on attempt ${i} of ${maxRetries} to ${action} container ${name}:\n${e}`)

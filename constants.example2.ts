@@ -2,6 +2,8 @@ import Constants from "./types/constants.type.ts";
 
 const constants: Constants = {
   homePath: "/home/incognito",
+  // If the number of epochs to the next event is equal or less than this number and the role is PENDING, the node will be skipped
+  maxEpochsToNextEvent: 3,
 
   // The key is the index they occupy as a docker container.
   // The value is the validator public key.
