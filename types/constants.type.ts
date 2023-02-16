@@ -20,5 +20,6 @@ export default interface Constants {
   homePath: string;
   extraDockers?: string[];
   instructions?: Instruction[];
+  maxEpochsToNextEvent?: number;
   validatorPublicKeys: ValidatorPublicKeys;
 }
