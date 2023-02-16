@@ -13,8 +13,8 @@ try {
   console.log(instructions);
 
   console.group("\nGetting node info.");
-  const nodesInfo = await getNodesStatus();
-  console.table(nodesInfo);
+  const nodesStatus = await getNodesStatus();
+  console.table(nodesStatus);
   console.groupEnd();
 
   const allNodesIndex = Object.keys(validatorPublicKeys).map((nodeIndex) => Number(nodeIndex));
@@ -25,11 +25,11 @@ try {
   if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "stop"));
   // Stop nodes
   const dockerNamesToManipulate = allNodesIndex
-    .filter((i) => !nodesInfo[i].skip)
+    .filter((i) => !nodesStatus[i].skip)
     .map((nodeIndex) => `inc_mainnet_${nodeIndex}`);
   console.log(await docker(dockerNamesToManipulate, "stop"));
   // Tell which nodes were skipped
-  const nodesToSkip = allNodesIndex.filter((i) => nodesInfo[i].skip);
+  const nodesToSkip = allNodesIndex.filter((i) => nodesStatus[i].skip);
   for (const nodeToSkip of nodesToSkip)
     console.log(`Skipping node ${nodeToSkip} because it's in or about to be in committee.`);
   console.groupEnd();
@@ -40,7 +40,7 @@ try {
     const fromNode = "fromNodeIndex" in from ? from.fromNodeIndex : from.fromPath;
 
     if (typeof fromNode === "number")
-      if (nodesInfo[fromNode].skip) {
+      if (nodesStatus[fromNode].skip) {
         console.log(
           `Skipping ${shardName} because the fromNode ${fromNode} it's in or about to be in committee.\n`
         );
@@ -49,7 +49,7 @@ try {
     console.group(shardName);
 
     for (const toNodeIndex of toNodesIndex) {
-      if (nodesInfo[toNodeIndex].skip) {
+      if (nodesStatus[toNodeIndex].skip) {
         console.log(`Skipping node ${toNodeIndex} because it's in or about to be in committee.`);
         continue;
       }
