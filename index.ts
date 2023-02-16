@@ -17,13 +17,12 @@ try {
   console.table(nodesStatus);
   console.groupEnd();
 
-  const allNodesIndex = Object.keys(validatorPublicKeys).map((nodeIndex) => Number(nodeIndex));
-
   console.group("\nStopping containers.");
 
   // Stop extra dockers
   if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "stop"));
   // Stop nodes
+  const allNodesIndex = Object.keys(validatorPublicKeys).map((nodeIndex) => Number(nodeIndex));
   const dockerNamesToManipulate = allNodesIndex
     .filter((i) => !nodesStatus[i].skip)
     .map((nodeIndex) => `inc_mainnet_${nodeIndex}`);
