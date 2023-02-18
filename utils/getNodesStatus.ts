@@ -5,9 +5,8 @@ import Roles from "../types/roles.type.ts";
 import shouldNodeBeSkipped from "./shouldNodeBeSkipped.ts";
 
 const { validatorPublicKeys = {} } = constants;
-// the monitor API only accepts 50 public keys at a time, so we split them into chunks of 40 to be safe
+// the monitor API only accepts a maximum of 50 public keys at a time, so we split them into chunks of 40 to be safe
 const mpks = lodash.chunk(Object.values(validatorPublicKeys), 40).map((chunk) => chunk.join(","));
-console.log(mpks);
 
 export type NodeStatus = { role: Roles | "ERROR" | "UNKNOWN"; epochsToNextEvent: number; skip: boolean };
 export type NodesStatus = Record<string | number, NodeStatus>;
