@@ -1,10 +1,13 @@
 import axiod from "axiod";
+import { lodash } from "lodash";
 import constants from "../constants.ts";
 import Roles from "../types/roles.type.ts";
 import shouldNodeBeSkipped from "./shouldNodeBeSkipped.ts";
 
 const { validatorPublicKeys = {} } = constants;
-const mpk = Object.values(validatorPublicKeys).join(",");
+// the monitor API only accepts 50 public keys at a time, so we split them into chunks of 40 to be safe
+const mpks = lodash.chunk(Object.values(validatorPublicKeys), 40).map((chunk) => chunk.join(","));
+console.log(mpks);
 
 export type NodeStatus = { role: Roles | "ERROR" | "UNKNOWN"; epochsToNextEvent: number; skip: boolean };
 export type NodesStatus = Record<string | number, NodeStatus>;
@@ -19,37 +22,38 @@ export default async function getNodesStatus() {
         role: "UNKNOWN",
         epochsToNextEvent: 0,
       };
-
     return toReturn;
   }
 
-  const { data } = await axiod.post<
-    | {
-        Role: Roles;
-        NextEventMsg: string;
-        MiningPubkey: string;
-      }[]
-    | { error: string }
-  >("https://monitor.incognito.org/pubkeystat/stat", { mpk });
+  for (const mpk of mpks) {
+    const { data } = await axiod.post<
+      | {
+          Role: Roles;
+          NextEventMsg: string;
+          MiningPubkey: string;
+        }[]
+      | { error: string }
+    >("https://monitor.incognito.org/pubkeystat/stat", { mpk });
 
-  if ("error" in data)
-    throw new Error(
-      "There's an error with the monitor's API: " +
-        data.error +
-        "\n\nIf you want to ignore the error, run the script with the --skip-checks flag: deno task run --skip-checks" +
-        "Keep in mind that this will skip the check for the nodes that are in or about to be in committee."
-    );
+    if ("error" in data)
+      throw new Error(
+        "There's an error with the monitor's API: " +
+          data.error +
+          "\n\nIf you want to ignore the error, run the script with the --skip-checks flag: deno task run --skip-checks" +
+          "Keep in mind that this will skip the check for the nodes that are in or about to be in committee."
+      );
 
-  for (const { Role, NextEventMsg, MiningPubkey } of data) {
-    const nodeIndex = Object.entries(validatorPublicKeys).find(([, mpk]) => mpk === MiningPubkey)?.[0];
-    if (!nodeIndex) continue;
-    // get first number from string using regex and parse it to number
-    const epochsToNextEvent = Number(NextEventMsg.match(/^\d+/)?.[0] ?? 0);
-    toReturn[nodeIndex] = {
-      role: Role,
-      epochsToNextEvent,
-      skip: shouldNodeBeSkipped({ role: Role, epochsToNextEvent }),
-    };
+    for (const { Role, NextEventMsg, MiningPubkey } of data) {
+      const nodeIndex = Object.entries(validatorPublicKeys).find(([, mpk]) => mpk === MiningPubkey)?.[0];
+      if (!nodeIndex) continue;
+      // get first number from string using regex and parse it to number
+      const epochsToNextEvent = Number(NextEventMsg.match(/^\d+/)?.[0] ?? 0);
+      toReturn[nodeIndex] = {
+        role: Role,
+        epochsToNextEvent,
+        skip: shouldNodeBeSkipped({ role: Role, epochsToNextEvent }),
+      };
+    }
   }
 
   return toReturn;
