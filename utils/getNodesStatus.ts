@@ -6,23 +6,39 @@ import shouldNodeBeSkipped from "./shouldNodeBeSkipped.ts";
 const { validatorPublicKeys = {} } = constants;
 const mpk = Object.values(validatorPublicKeys).join(",");
 
-export type NodeStatus = { role: Roles | "ERROR"; epochsToNextEvent: number; skip: boolean };
+export type NodeStatus = { role: Roles | "ERROR" | "UNKNOWN"; epochsToNextEvent: number; skip: boolean };
 export type NodesStatus = Record<string | number, NodeStatus>;
 
 export default async function getNodesStatus() {
   const toReturn: NodesStatus = {};
 
-  console.log("before data");
-  const request = await axiod.post<
-    {
-      Role: Roles;
-      NextEventMsg: string;
-      MiningPubkey: string;
-    }[]
+  if (Deno.args[0] !== "--skip-checks") {
+    for (const nodeIndex of Object.keys(validatorPublicKeys))
+      toReturn[nodeIndex] = {
+        skip: false,
+        role: "UNKNOWN",
+        epochsToNextEvent: 0,
+      };
+
+    return toReturn;
+  }
+
+  const { data } = await axiod.post<
+    | {
+        Role: Roles;
+        NextEventMsg: string;
+        MiningPubkey: string;
+      }[]
+    | { error: string }
   >("https://monitor.incognito.org/pubkeystat/stat", { mpk });
-  const { data } = request;
-  console.log("data", data);
-  console.log("request", request);
+
+  if ("error" in data)
+    throw new Error(
+      "There's an error with the monitor's API: " +
+        data.error +
+        "\n\nIf you want to ignore the error, run the script with the --skip-checks flag: deno task run --skip-checks" +
+        "Keep in mind that this will skip the check for the nodes that are in or about to be in committee."
+    );
 
   for (const { Role, NextEventMsg, MiningPubkey } of data) {
     const nodeIndex = Object.entries(validatorPublicKeys).find(([, mpk]) => mpk === MiningPubkey)?.[0];
