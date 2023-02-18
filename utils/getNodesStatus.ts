@@ -12,7 +12,7 @@ export type NodesStatus = Record<string | number, NodeStatus>;
 export default async function getNodesStatus() {
   const toReturn: NodesStatus = {};
 
-  if (Deno.args[0] !== "--skip-checks") {
+  if (Deno.args[0] === "--skip-checks") {
     for (const nodeIndex of Object.keys(validatorPublicKeys))
       toReturn[nodeIndex] = {
         skip: false,
