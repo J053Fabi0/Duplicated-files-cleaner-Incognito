@@ -6,7 +6,11 @@ import shouldNodeBeSkipped from "./shouldNodeBeSkipped.ts";
 const { validatorPublicKeys = {} } = constants;
 const mpk = Object.values(validatorPublicKeys).join(",");
 
-export type NodeStatus = { role: Roles | "ERROR"; epochsToNextEvent: number; skip: boolean };
+export interface NodeStatus {
+  skip: boolean;
+  role: Roles | "ERROR";
+  epochsToNextEvent: number;
+}
 export type NodesStatus = Record<string | number, NodeStatus>;
 
 export default async function getNodesStatus() {
