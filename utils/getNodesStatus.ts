@@ -12,13 +12,17 @@ export type NodesStatus = Record<string | number, NodeStatus>;
 export default async function getNodesStatus() {
   const toReturn: NodesStatus = {};
 
-  const { data } = await axiod.post<
+  console.log("before data");
+  const request = await axiod.post<
     {
       Role: Roles;
       NextEventMsg: string;
       MiningPubkey: string;
     }[]
   >("https://monitor.incognito.org/pubkeystat/stat", { mpk });
+  const { data } = request;
+  console.log("data", data);
+  console.log("request", request);
 
   for (const { Role, NextEventMsg, MiningPubkey } of data) {
     const nodeIndex = Object.entries(validatorPublicKeys).find(([, mpk]) => mpk === MiningPubkey)?.[0];
