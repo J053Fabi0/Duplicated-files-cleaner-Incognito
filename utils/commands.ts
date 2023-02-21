@@ -26,12 +26,13 @@ export const dockerPs = () =>
       // Remove the first line that is the header.
       .slice(1)
       .reduce((obj, v) => {
-        obj[+/inc_mainnet_\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
+        obj[/inc_mainnet_\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
         return obj;
       }, {} as Record<string, "ONLINE" | "OFFLINE">);
 
     for (const dockerIndex of Object.keys(validatorPublicKeys))
-      if (dockersStatus[dockerIndex] === undefined) dockersStatus[dockerIndex] = "OFFLINE";
+      if (dockersStatus[`inc_mainnet_${dockerIndex}`] === undefined)
+        dockersStatus[`inc_mainnet_${dockerIndex}`] = "OFFLINE";
 
     return dockersStatus;
   });
