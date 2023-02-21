@@ -31,7 +31,8 @@ export const dockerPs = () =>
       }, {} as Record<string, "ONLINE" | "OFFLINE">);
 
     for (const dockerIndex of Object.keys(validatorPublicKeys))
-      if (dockersStatus[dockerIndex] === undefined) dockersStatus[dockerIndex] = "OFFLINE";
+      if (dockersStatus[`inc_mainnet_${dockerIndex}`] === undefined)
+        dockersStatus[`inc_mainnet_${dockerIndex}`] = "OFFLINE";
 
     return dockersStatus;
   });
