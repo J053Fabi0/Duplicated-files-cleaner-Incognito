@@ -31,8 +31,8 @@ try {
   console.log(await docker(dockerNamesToManipulate, "stop"));
   // Tell which nodes were skipped
   const nodesToSkip = allNodesIndex.filter((i) => nodesStatus[i].skip);
-  for (const nodeToSkip of nodesToSkip)
-    console.log(`Skipping node ${nodeToSkip} because it's in or about to be in committee.`);
+  const skippingExplanation = flags.onlyOffline ? "it's online" : "it's in or about to be in committee";
+  for (const nodeToSkip of nodesToSkip) console.log(`Skipping node ${nodeToSkip} because ${skippingExplanation}.`);
   console.groupEnd();
   console.log();
 
@@ -42,16 +42,14 @@ try {
 
     if (typeof fromNode === "number")
       if (nodesStatus[fromNode].skip) {
-        console.log(
-          `Skipping ${shardName} because the fromNode ${fromNode} it's in or about to be in committee.\n`
-        );
+        console.log(`Skipping ${shardName} because the fromNode ${fromNode} ${skippingExplanation}.\n`);
         continue;
       }
     console.group(shardName);
 
     for (const toNodeIndex of toNodesIndex) {
       if (nodesStatus[toNodeIndex].skip) {
-        console.log(`Skipping node ${toNodeIndex} because it's in or about to be in committee.`);
+        console.log(`Skipping node ${toNodeIndex} because ${skippingExplanation}.`);
         continue;
       }
 
