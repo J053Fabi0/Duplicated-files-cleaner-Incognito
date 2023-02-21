@@ -10,7 +10,11 @@ const { validatorPublicKeys = {} } = constants;
 // the monitor API only accepts a maximum of 50 public keys at a time, so we split them into chunks of 40 to be safe
 const mpks = lodash.chunk(Object.values(validatorPublicKeys), 40).map((chunk) => chunk.join(","));
 
-export type NodeStatus = { role: Roles | "ERROR" | "UNKNOWN"; epochsToNextEvent: number; skip: boolean };
+export interface NodeStatus {
+  skip: boolean;
+  epochsToNextEvent: number;
+  role: Roles | "ERROR" | "UNKNOWN";
+}
 export type NodesStatus = Record<string | number, NodeStatus>;
 
 export default async function getNodesStatus() {
