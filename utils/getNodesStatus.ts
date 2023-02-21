@@ -12,16 +12,16 @@ export type NodeStatus = { role: Roles | "ERROR" | "UNKNOWN"; epochsToNextEvent:
 export type NodesStatus = Record<string | number, NodeStatus>;
 
 export default async function getNodesStatus() {
-  const toReturn: NodesStatus = {};
+  const nodesStatus: NodesStatus = {};
 
-  if (Deno.args[0] === "--skip-checks") {
+  if (Deno.args.includes("--skip-checks")) {
     for (const nodeIndex of Object.keys(validatorPublicKeys))
-      toReturn[nodeIndex] = {
+      nodesStatus[nodeIndex] = {
         skip: false,
         role: "UNKNOWN",
         epochsToNextEvent: 0,
       };
-    return toReturn;
+    return nodesStatus;
   }
 
   for (const mpk of mpks) {
@@ -47,7 +47,7 @@ export default async function getNodesStatus() {
       if (!nodeIndex) continue;
       // get first number from string using regex and parse it to number
       const epochsToNextEvent = Number(NextEventMsg.match(/^\d+/)?.[0] ?? 0);
-      toReturn[nodeIndex] = {
+      nodesStatus[nodeIndex] = {
         role: Role,
         epochsToNextEvent,
         skip: shouldNodeBeSkipped({ role: Role, epochsToNextEvent }),
@@ -55,5 +55,5 @@ export default async function getNodesStatus() {
     }
   }
 
-  return toReturn;
+  return nodesStatus;
 }

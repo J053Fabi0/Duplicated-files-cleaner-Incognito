@@ -2,7 +2,7 @@ import db from "./db/initDatabase.ts";
 import constants from "./constants.ts";
 import getNodesStatus from "./utils/getNodesStatus.ts";
 import getInstructions from "./utils/getInstructions.ts";
-import { docker, rm, cp, chown, getExtraFiles } from "./utils/commands.ts";
+import { docker, rm, cp, chown, getExtraFiles, dockerPs } from "./utils/commands.ts";
 
 const { validatorPublicKeys = {}, homePath } = constants;
 
@@ -14,6 +14,7 @@ try {
 
   console.group("\nGetting node info.");
   const nodesStatus = await getNodesStatus();
+  const dockerStatus = await dockerPs();
   console.table(nodesStatus);
   console.groupEnd();
 
@@ -79,10 +80,17 @@ try {
   }
 
   console.group("\nStarting containers.");
+
   // Start extra dockers
   if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "start"));
+
   // Start nodes
-  console.log(await docker(dockerNamesToManipulate, "start"));
+  const dockersToStart = Deno.args.includes("--keep-status")
+    ? // Only start the nodes that were online before the script started.
+      dockerNamesToManipulate.filter((name) => dockerStatus[name] === "ONLINE")
+    : // Start all nodes regardless of their status before the script started.
+      dockerNamesToManipulate;
+  if (dockersToStart.length > 0) console.log(await docker(dockersToStart, "start"));
 
   console.groupEnd();
 
