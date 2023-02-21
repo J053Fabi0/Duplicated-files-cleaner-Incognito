@@ -19,6 +19,8 @@ try {
   console.table(nodesStatus);
   console.groupEnd();
 
+  if ([].length === 0) throw new Error("Stop here.");
+
   console.group("\nStopping containers.");
 
   // Stop extra dockers

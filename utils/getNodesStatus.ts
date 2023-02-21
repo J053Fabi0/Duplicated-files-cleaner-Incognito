@@ -22,6 +22,7 @@ export default async function getNodesStatus() {
 
   if (flags.onlyOffline) {
     const dockerStatus = await dockerPs();
+    console.table(dockerStatus);
     for (const nodeIndex of Object.keys(validatorPublicKeys))
       nodesStatus[nodeIndex] = {
         role: "UNKNOWN",
