@@ -1,3 +1,4 @@
+import flags from "./utils/flags.ts";
 import db from "./db/initDatabase.ts";
 import constants from "./constants.ts";
 import getNodesStatus from "./utils/getNodesStatus.ts";
@@ -13,8 +14,8 @@ try {
   console.log(instructions);
 
   console.group("\nGetting node info.");
+  const dockerStatus = flags.keepStatus && !flags.onlyOffline ? await dockerPs() : {};
   const nodesStatus = await getNodesStatus();
-  const dockerStatus = await dockerPs();
   console.table(nodesStatus);
   console.groupEnd();
 
@@ -85,11 +86,12 @@ try {
   if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "start"));
 
   // Start nodes
-  const dockersToStart = Deno.args.includes("--keep-status")
-    ? // Only start the nodes that were online before the script started.
-      dockerNamesToManipulate.filter((name) => dockerStatus[name] === "ONLINE")
-    : // Start all nodes regardless of their status before the script started.
-      dockerNamesToManipulate;
+  const dockersToStart =
+    flags.keepStatus && !flags.onlyOffline
+      ? // Only start the nodes that were online before the script started.
+        dockerNamesToManipulate.filter((name) => dockerStatus[name] === "ONLINE")
+      : // Start all nodes regardless of their status before the script started.
+        dockerNamesToManipulate;
   if (dockersToStart.length > 0) console.log(await docker(dockersToStart, "start"));
 
   console.groupEnd();

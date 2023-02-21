@@ -1,6 +1,8 @@
 import axiod from "axiod";
+import flags from "./flags.ts";
 import { lodash } from "lodash";
 import constants from "../constants.ts";
+import { dockerPs } from "./commands.ts";
 import Roles from "../types/roles.type.ts";
 import shouldNodeBeSkipped from "./shouldNodeBeSkipped.ts";
 
@@ -13,6 +15,17 @@ export type NodesStatus = Record<string | number, NodeStatus>;
 
 export default async function getNodesStatus() {
   const nodesStatus: NodesStatus = {};
+
+  if (flags.onlyOffline) {
+    const dockerStatus = await dockerPs();
+    for (const nodeIndex of Object.keys(validatorPublicKeys))
+      nodesStatus[nodeIndex] = {
+        role: "UNKNOWN",
+        epochsToNextEvent: 0,
+        skip: dockerStatus[`inc_mainnet_${nodeIndex}`] === "ONLINE",
+      };
+    return nodesStatus;
+  }
 
   if (Deno.args.includes("--skip-checks")) {
     for (const nodeIndex of Object.keys(validatorPublicKeys))
