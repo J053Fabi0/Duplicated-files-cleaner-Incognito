@@ -17,22 +17,27 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
     (e, i) => console.log(`Error on attempt ${i} of ${maxRetries} to ${action} container ${name}:\n${e}`)
   );
 
+type DockersStatus = Record<string, "ONLINE" | "OFFLINE">;
+let dockersStatus: DockersStatus | undefined = undefined;
 export const dockerPs = () =>
   _docker(["ps", "--all", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
-    const dockersStatus = v
-      // Get rid of a last "\n" that always has nothing.
-      .slice(0, -1)
-      .split("\n")
-      // Remove the first line that is the header.
-      .slice(1)
-      .reduce((obj, v) => {
-        obj[/inc_mainnet_\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
-        return obj;
-      }, {} as Record<string, "ONLINE" | "OFFLINE">);
+    // Return the cached value if it exists.
+    if (!dockersStatus) {
+      dockersStatus = v
+        // Get rid of a last "\n" that always has nothing.
+        .slice(0, -1)
+        .split("\n")
+        // Remove the first line that is the header.
+        .slice(1)
+        .reduce((obj, v) => {
+          obj[/inc_mainnet_\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
+          return obj;
+        }, {} as DockersStatus);
 
-    for (const dockerIndex of Object.keys(validatorPublicKeys))
-      if (dockersStatus[`inc_mainnet_${dockerIndex}`] === undefined)
-        dockersStatus[`inc_mainnet_${dockerIndex}`] = "OFFLINE";
+      for (const dockerIndex of Object.keys(validatorPublicKeys))
+        if (dockersStatus[`inc_mainnet_${dockerIndex}`] === undefined)
+          dockersStatus[`inc_mainnet_${dockerIndex}`] = "OFFLINE";
+    }
 
     return dockersStatus;
   });

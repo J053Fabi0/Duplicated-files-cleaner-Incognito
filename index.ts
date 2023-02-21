@@ -85,14 +85,15 @@ try {
   // Start extra dockers
   if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "start"));
 
-  // Start nodes
-  const dockersToStart =
-    flags.keepStatus && !flags.onlyOffline
+  // Start nodes if not in offline mode
+  if (!flags.onlyOffline) {
+    const dockersToStart = flags.keepStatus
       ? // Only start the nodes that were online before the script started.
         dockerNamesToManipulate.filter((name) => dockerStatus[name] === "ONLINE")
       : // Start all nodes regardless of their status before the script started.
         dockerNamesToManipulate;
-  if (dockersToStart.length > 0) console.log(await docker(dockersToStart, "start"));
+    if (dockersToStart.length > 0) console.log(await docker(dockersToStart, "start"));
+  }
 
   console.groupEnd();
 
