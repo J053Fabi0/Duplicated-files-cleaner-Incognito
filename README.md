@@ -16,8 +16,11 @@ There are 3 ways to set `constants.ts`:
 1. `deno`. See [installation guide](https://deno.land/manual/getting_started/installation)
 
 ## To add deno to the path, after installing it.
+
 1. `nano ~/.bashrc`.
-1. Add the following two lines at the end or edit PATH accordingly if it already exists: `export DENO_INSTALL="/root/.deno"` `export PATH="$DENO_INSTALL/bin:$PATH"`, but substitute `/root` with the directory in which deno is installed.
+1. Add the following two lines at the end or edit PATH accordingly if it already exists:
+   `export DENO_INSTALL="/root/.deno"` `export PATH="$DENO_INSTALL/bin:$PATH"`, but substitute `/root` with the
+   directory in which deno is installed.
 1. Save and close.
 1. `cd`.
 1. `. .bashrc`.
@@ -31,6 +34,16 @@ There are 3 ways to set `constants.ts`:
 1. Run `deno task run`.
 
 If you want to update the code, run `git pull`.
+
+## Useful flags
+
+`--keep-status`: Only start the nodes that were online before the script started. It keeps nodes offline if they
+were offline.
+
+`--skip-checks`: Skip the check for the nodes that are in or about to be in committee.
+
+`--only-offline`: Skip the nodes that are online. This skips the check for the nodes that are in or about to be in
+committee.
 
 # Using crontab
 

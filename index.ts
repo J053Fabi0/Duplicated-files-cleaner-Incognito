@@ -1,8 +1,9 @@
+import flags from "./utils/flags.ts";
 import db from "./db/initDatabase.ts";
 import constants from "./constants.ts";
 import getNodesStatus from "./utils/getNodesStatus.ts";
 import getInstructions from "./utils/getInstructions.ts";
-import { docker, rm, cp, chown, getExtraFiles } from "./utils/commands.ts";
+import { docker, rm, cp, chown, getExtraFiles, dockerPs } from "./utils/commands.ts";
 
 const { validatorPublicKeys = {}, homePath } = constants;
 
@@ -13,6 +14,7 @@ try {
   console.log(instructions);
 
   console.group("\nGetting node info.");
+  const dockerStatus = flags.keepStatus && !flags.onlyOffline ? await dockerPs() : {};
   const nodesStatus = await getNodesStatus();
   console.table(nodesStatus);
   console.groupEnd();
@@ -79,10 +81,18 @@ try {
   }
 
   console.group("\nStarting containers.");
+
   // Start extra dockers
   if (constants.extraDockers instanceof Array) console.log(await docker(constants.extraDockers, "start"));
+
   // Start nodes
-  console.log(await docker(dockerNamesToManipulate, "start"));
+  const dockersToStart =
+    flags.keepStatus && !flags.onlyOffline
+      ? // Only start the nodes that were online before the script started.
+        dockerNamesToManipulate.filter((name) => dockerStatus[name] === "ONLINE")
+      : // Start all nodes regardless of their status before the script started.
+        dockerNamesToManipulate;
+  if (dockersToStart.length > 0) console.log(await docker(dockersToStart, "start"));
 
   console.groupEnd();
 
