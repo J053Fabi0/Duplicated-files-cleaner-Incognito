@@ -63,7 +63,7 @@ export default async function getNodesStatus() {
       const nodeIndex = Object.entries(validatorPublicKeys).find(([, mpk]) => mpk === MiningPubkey)?.[0];
       if (!nodeIndex) continue;
       // get first number from string using regex and parse it to number
-      const epochsToNextEvent = Number(NextEventMsg.match(/^\d+/)?.[0] ?? 0);
+      const epochsToNextEvent = Number(NextEventMsg.match(/\d+/)?.[0] ?? 0);
       nodesStatus[nodeIndex] = {
         role: Role,
         epochsToNextEvent,

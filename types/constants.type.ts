@@ -1,6 +1,6 @@
 import { ShardsNames } from "./shards.type.ts";
 
-interface InstructionIncomplete {
+export interface InstructionIncomplete {
   shardName: ShardsNames;
   toNodesIndex: (keyof Constants["validatorPublicKeys"])[];
 }
@@ -19,7 +19,7 @@ export type ValidatorPublicKeys = Record<number, string>;
 export default interface Constants {
   homePath: string;
   extraDockers?: string[];
-  instructions?: Instruction[];
+  instructions?: (Instruction | InstructionIncomplete)[];
   maxEpochsToNextEvent?: number;
   validatorPublicKeys: ValidatorPublicKeys;
 }

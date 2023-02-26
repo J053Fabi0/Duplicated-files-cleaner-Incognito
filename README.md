@@ -7,8 +7,23 @@ There are 3 ways to set `constants.ts`:
 
 1. With just validator public keys, as in `constants.expamle1.ts`. This will try to create instructions, relaying
    on the [monitor's API](https://monitor.incognito.org).
+
 2. Setting your own instructions, as in `constants.example2.ts`. This is an alternative if the first option fails
-   or if you want to take control over the instructions.
+   or if you want to take control over the instructions. `fromNodeIndex` is optional. You could write it like this:
+
+   ```js
+   instructions: [
+      {
+         shardName: "beacon",
+         toNodesIndex: [0, 1, 2, 3, 4, 5],
+      },
+   ],
+   ```
+
+   The script will set `fromNodeIndex` to the node who has more files in the shard's directory, effectively
+   choosing the most updated to be the seeder. The chosen node will always be one which won't be skipped. Nodes can
+   be skipped if they are about or in `COMMITEE` or for other reasons.
+
 3. Same as 2, but with a fullnode as source or any other data source, as in `constants.example3.ts`.
 
 # Dependencies
