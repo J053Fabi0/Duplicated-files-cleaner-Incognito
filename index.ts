@@ -8,16 +8,15 @@ import { docker, rm, cp, chown, getExtraFiles, dockerPs } from "./utils/commands
 const { validatorPublicKeys = {}, homePath } = constants;
 
 try {
-  console.log("Getting instructions.");
-  const instructions = await getInstructions();
-  console.log("Instructions:");
-  console.log(instructions);
-
-  console.group("\nGetting node info.");
+  console.group("Getting node info.");
   const dockerStatus = flags.keepStatus && !flags.onlyOffline ? await dockerPs() : {};
   const nodesStatus = await getNodesStatus();
   console.table(nodesStatus);
   console.groupEnd();
+
+  console.log("\nGetting instructions.");
+  const instructions = await getInstructions(nodesStatus);
+  console.log(instructions);
 
   console.group("\nStopping containers.");
 
