@@ -29,10 +29,9 @@ export default async function getInstructions(nodesStatus: NodesStatus) {
         return obj;
       }, {} as Record<string, number>);
 
-      let mostUpdatedNode = -1;
-      for (const nodeIndex of activeNodes)
-        if (mostUpdatedNode === -1 || totalFilesPerNode[nodeIndex] > totalFilesPerNode[mostUpdatedNode])
-          mostUpdatedNode = nodeIndex;
+      let mostUpdatedNode = activeNodes[0] ?? instruction.toNodesIndex[0];
+      for (const nodeIndex of activeNodes.slice(1))
+        if (totalFilesPerNode[nodeIndex] > totalFilesPerNode[mostUpdatedNode]) mostUpdatedNode = nodeIndex;
 
       instructions.push({
         shardName: instruction.shardName,
