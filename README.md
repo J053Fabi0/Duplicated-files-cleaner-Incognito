@@ -57,8 +57,8 @@ were offline.
 
 `--skip-checks`: Skip the check for the nodes that are in or about to be in committee.
 
-`--only-offline`: Skip the nodes that are online. This skips the check for the nodes that are in or about to be in
-committee.
+`--only-offline`: Skip the nodes whose docker is running, so it only deals with offline dockers. This skips the
+check for the nodes that are in or about to be in committee.
 
 # Using crontab
 
