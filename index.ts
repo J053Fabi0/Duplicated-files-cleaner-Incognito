@@ -16,7 +16,7 @@ try {
 
   console.group("\nGetting instructions.");
   const instructions = await getInstructions(nodesStatus);
-  console.log(instructions);
+  console.dir(instructions, { depth: 100 });
   console.groupEnd();
 
   console.group("\nStopping containers.");
