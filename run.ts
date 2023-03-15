@@ -69,27 +69,30 @@ export default async function run() {
         const shardStorageFiles = storageFiles[shardName];
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
-        fileFor: for (const file of getFiles(shardPath)) {
-          // If the file is not in the storage directory, skip it.
-          // Compare the number. Because it is sorted from high to low, it will continue if the number is lower.
-          let storageFile: File & { used: boolean } = shardStorageFiles[0];
-          for (storageFile of shardStorageFiles) {
-            if (storageFile.number === file.number) break;
-            if (storageFile.number < file.number) continue fileFor;
-          }
-
+        for (const file of getFiles(shardPath))
           promises.push(
-            (async (from, to) => {
+            (async () => {
+              // If the file is not in the storage directory, skip it.
+              // Because it is sorted from high to low, it will continue if the number is lower.
+              let storageFile: File & { used: boolean } = shardStorageFiles[0];
+              for (storageFile of shardStorageFiles) {
+                if (storageFile.number === file.number) break;
+                if (storageFile.number < file.number) return;
+              }
+
+              const from = join(shardStoragePath, file.name);
+              const to = join(shardPath, file.name);
+
               try {
                 await Deno.remove(to);
                 await Deno.link(from, to);
               } catch {
                 //
               }
+
               storageFile.used = true;
-            })(join(shardStoragePath, file.name), join(shardPath, file.name))
+            })()
           );
-        }
 
         await Promise.all(promises);
       }
