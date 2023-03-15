@@ -6,7 +6,9 @@ import getFiles, { File } from "./utils/getFiles.ts";
 const { homePath, storageFolder, instructions, filesToStrip } = constants;
 const homeStoragePath = join(homePath, storageFolder);
 
-const storageFiles: Record<string, (File & { used: boolean })[]> = {};
+type StorageFile = File & { used: boolean };
+
+const storageFiles: Record<string, StorageFile[]> = {};
 for (const { shardName } of instructions) {
   const shardStoragePath = join(homeStoragePath, shardName);
 
@@ -65,16 +67,16 @@ export default async function run() {
       const shardStoragePath = join(homeStoragePath, shardName);
 
       for (const node of nodes) {
-        const promises: Promise<void>[] = [];
         const shardStorageFiles = storageFiles[shardName];
+        const defaultStorageFile = shardStorageFiles[0];
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
-        for (const file of getFiles(shardPath))
-          promises.push(
+        await Promise.all(
+          getFiles(shardPath).map((file) =>
             (async () => {
               // If the file is not in the storage directory, skip it.
               // Because it is sorted from high to low, it will continue if the number is lower.
-              let storageFile: File & { used: boolean } = shardStorageFiles[0];
+              let storageFile: StorageFile = defaultStorageFile;
               for (storageFile of shardStorageFiles) {
                 if (storageFile.number === file.number) break;
                 if (storageFile.number < file.number) return;
@@ -92,9 +94,8 @@ export default async function run() {
 
               storageFile.used = true;
             })()
-          );
-
-        await Promise.all(promises);
+          )
+        );
       }
     }
 
