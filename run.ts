@@ -18,7 +18,7 @@ for (const { shardName } of instructions) {
       throw new Error(`${shardStoragePath} is not a directory. Deleted it.`);
     }
   } catch (e) {
-    console.error(e);
+    console.error("Handled error:", e.message);
     Deno.mkdirSync(shardStoragePath, { recursive: true });
   }
 
@@ -31,28 +31,48 @@ export default function run() {
 
     // Move the new files to the storage directory.
     for (const { shardName, nodes } of instructions) {
+      const shardStorageFiles = storageFiles[shardName];
       const shardStoragePath = join(storageHomePath, shardName);
 
       for (const node of nodes) {
-        const shardPath = join(homePath, `node_data_${node}/mainnet/block/${shardName}`);
-        const filesOfNode = getFiles(shardPath).slice(filesToStrip);
+        const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
+        const filesOfNode = getFiles(shardPath)
+          .slice(filesToStrip)
+          .filter((file) => file.isSymlink === false);
 
         // create hard links all the files inside storageDirectory
-        for (const file of filesOfNode) {
-          const shardStorageFiles = storageFiles[shardName];
-          const { name: fileName } = file;
-
+        for (const file of filesOfNode)
           try {
-            // Create the hard link.
-            Deno.linkSync(join(shardPath, fileName), join(shardStoragePath, fileName));
-
+            // Create the hard link in the storage directory.
+            Deno.linkSync(join(shardPath, file.name), join(shardStoragePath, file.name));
             shardStorageFiles.push(file);
           } catch {
             // The file already exists.
           }
-        }
+      }
 
-        storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
+      storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
+    }
+
+    // Substitute files in nodes with the ones in storage.
+    for (const { shardName, nodes } of instructions) {
+      const shardStoragePath = join(storageHomePath, shardName);
+
+      for (const node of nodes) {
+        const shardStorageFiles = storageFiles[shardName];
+        const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
+        const filesOfNode = getFiles(shardPath).filter((file) => file.isSymlink === false);
+
+        for (const file of filesOfNode) {
+          // If the file is not in the storage directory, skip it.
+          if (!shardStorageFiles.find((f) => f.number === file.number)) continue;
+
+          const from = join(shardStoragePath, file.name);
+          const to = join(shardPath, file.name);
+
+          Deno.removeSync(to);
+          Deno.symlinkSync(from, to);
+        }
       }
     }
 
