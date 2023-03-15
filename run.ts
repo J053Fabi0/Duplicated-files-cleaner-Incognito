@@ -44,14 +44,19 @@ export default async function run() {
           .filter((file) => file.isSymlink === false);
 
         // create hard links all the files inside storageDirectory
-        for (const file of filesOfNode)
-          try {
-            // Create the hard link in the storage directory.
-            Deno.linkSync(join(shardPath, file.name), join(shardStoragePath, file.name));
-            shardStorageFiles.push({ ...file, used: false });
-          } catch {
-            // The file already exists.
-          }
+        await Promise.all(
+          filesOfNode.map((file) =>
+            (async () => {
+              try {
+                // Create the hard link in the storage directory.
+                await Deno.link(join(shardPath, file.name), join(shardStoragePath, file.name));
+                shardStorageFiles.push({ ...file, used: false });
+              } catch {
+                // The file already exists.
+              }
+            })()
+          )
+        );
       }
 
       storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
