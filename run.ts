@@ -63,15 +63,23 @@ export default function run() {
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
         const filesOfNode = getFiles(shardPath).filter((file) => file.isSymlink === false);
 
-        for (const file of filesOfNode) {
+        fileFor: for (const file of filesOfNode) {
           // If the file is not in the storage directory, skip it.
-          if (!shardStorageFiles.find((f) => f.number === file.number)) continue;
+          // Compare the number. Because it is sorted from high to low, it will continue if the number is lower.
+          for (const storageFile of shardStorageFiles) {
+            if (storageFile.number === file.number) break;
+            if (storageFile.number < file.number) continue fileFor;
+          }
 
           const from = join(shardStoragePath, file.name);
           const to = join(shardPath, file.name);
 
-          Deno.removeSync(to);
-          Deno.symlinkSync(from, to);
+          try {
+            Deno.removeSync(to);
+            Deno.symlinkSync(from, to);
+          } catch {
+            //
+          }
         }
       }
     }
