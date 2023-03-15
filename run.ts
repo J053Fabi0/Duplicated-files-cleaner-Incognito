@@ -27,12 +27,13 @@ for (const { shardName } of instructions) {
 
 export default function run() {
   try {
-    console.log(storageFiles.shard3.length);
-
     // Move the new files to the storage directory.
     for (const { shardName, nodes } of instructions) {
       const shardStorageFiles = storageFiles[shardName];
       const shardStoragePath = join(storageHomePath, shardName);
+
+      console.group(shardName);
+      console.log(shardStorageFiles.length);
 
       for (const node of nodes) {
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
@@ -52,12 +53,15 @@ export default function run() {
       }
 
       storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
-    }
 
-    console.log(storageFiles.shard3.length);
+      console.log(storageFiles[shardName].length);
+      console.groupEnd();
+    }
 
     // Substitute files in nodes with the ones in storage.
     for (const { shardName, nodes } of instructions) {
+      console.log(`Substituting files in ${shardName}`);
+
       const shardStoragePath = join(storageHomePath, shardName);
 
       for (const node of nodes) {
