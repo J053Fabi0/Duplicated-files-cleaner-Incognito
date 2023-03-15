@@ -6,4 +6,6 @@ const getFiles = (path: string) =>
     // sort by number from highest to lowest
     .sort((a, b) => b.number - a.number);
 
+export type File = Deno.DirEntry & { number: number };
+
 export default getFiles;

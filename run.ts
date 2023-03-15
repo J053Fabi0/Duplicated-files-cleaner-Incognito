@@ -1,14 +1,14 @@
 import constants from "./constants.ts";
 
 import { join } from "https://deno.land/std@0.179.0/path/mod.ts";
-import getFiles from "./utils/getFiles.ts";
+import getFiles, { File } from "./utils/getFiles.ts";
 
 const { homePath, storageFolder, instructions, filesToStrip } = constants;
-const storageHomePath = join(homePath, storageFolder);
+const homeStoragePath = join(homePath, storageFolder);
 
-const storageFiles: Record<string, ReturnType<typeof getFiles>> = {};
+const storageFiles: Record<string, (File & { used: boolean })[]> = {};
 for (const { shardName } of instructions) {
-  const shardStoragePath = join(storageHomePath, shardName);
+  const shardStoragePath = join(homeStoragePath, shardName);
 
   // If it doesn't exist, create it.
   try {
@@ -22,7 +22,7 @@ for (const { shardName } of instructions) {
     Deno.mkdirSync(shardStoragePath, { recursive: true });
   }
 
-  storageFiles[shardName] = getFiles(shardStoragePath);
+  storageFiles[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: false }));
 }
 
 export default function run() {
@@ -30,7 +30,7 @@ export default function run() {
     // Move the new files to the storage directory.
     for (const { shardName, nodes } of instructions) {
       const shardStorageFiles = storageFiles[shardName];
-      const shardStoragePath = join(storageHomePath, shardName);
+      const shardStoragePath = join(homeStoragePath, shardName);
 
       console.group(shardName);
       console.log(shardStorageFiles.length);
@@ -46,7 +46,7 @@ export default function run() {
           try {
             // Create the hard link in the storage directory.
             Deno.linkSync(join(shardPath, file.name), join(shardStoragePath, file.name));
-            shardStorageFiles.push(file);
+            shardStorageFiles.push({ ...file, used: false });
           } catch {
             // The file already exists.
           }
@@ -62,17 +62,18 @@ export default function run() {
     for (const { shardName, nodes } of instructions) {
       console.log(`Substituting files in ${shardName}`);
 
-      const shardStoragePath = join(storageHomePath, shardName);
+      const shardStoragePath = join(homeStoragePath, shardName);
 
       for (const node of nodes) {
         const shardStorageFiles = storageFiles[shardName];
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
-        const filesOfNode = getFiles(shardPath).filter((file) => file.isSymlink === false);
+        const filesOfNode = getFiles(shardPath);
 
         fileFor: for (const file of filesOfNode) {
           // If the file is not in the storage directory, skip it.
           // Compare the number. Because it is sorted from high to low, it will continue if the number is lower.
-          for (const storageFile of shardStorageFiles) {
+          let storageFile: File & { used: boolean } = shardStorageFiles[0];
+          for (storageFile of shardStorageFiles) {
             if (storageFile.number === file.number) break;
             if (storageFile.number < file.number) continue fileFor;
           }
@@ -82,12 +83,27 @@ export default function run() {
 
           try {
             Deno.removeSync(to);
-            Deno.symlinkSync(from, to);
+            Deno.linkSync(from, to);
           } catch {
             //
           }
+
+          storageFile.used = true;
         }
       }
+    }
+
+    // Delete the files that are not used.
+    for (const { shardName } of instructions) {
+      const shardStoragePath = join(homeStoragePath, shardName);
+
+      for (const file of storageFiles[shardName])
+        if (file.used === false)
+          try {
+            Deno.removeSync(join(shardStoragePath, file.name));
+          } catch {
+            //
+          }
     }
   } catch (e) {
     console.error(e);
