@@ -25,7 +25,7 @@ for (const { shardName } of instructions) {
   storageFiles[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: false }));
 }
 
-export default function run() {
+export default async function run() {
   try {
     // Move the new files to the storage directory.
     for (const { shardName, nodes } of instructions) {
@@ -65,11 +65,11 @@ export default function run() {
       const shardStoragePath = join(homeStoragePath, shardName);
 
       for (const node of nodes) {
+        const promises: Promise<void>[] = [];
         const shardStorageFiles = storageFiles[shardName];
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
-        const filesOfNode = getFiles(shardPath);
 
-        fileFor: for (const file of filesOfNode) {
+        fileFor: for (const file of getFiles(shardPath)) {
           // If the file is not in the storage directory, skip it.
           // Compare the number. Because it is sorted from high to low, it will continue if the number is lower.
           let storageFile: File & { used: boolean } = shardStorageFiles[0];
@@ -78,18 +78,20 @@ export default function run() {
             if (storageFile.number < file.number) continue fileFor;
           }
 
-          const from = join(shardStoragePath, file.name);
-          const to = join(shardPath, file.name);
-
-          try {
-            Deno.removeSync(to);
-            Deno.linkSync(from, to);
-          } catch {
-            //
-          }
-
-          storageFile.used = true;
+          promises.push(
+            (async (from, to) => {
+              try {
+                await Deno.remove(to);
+                await Deno.link(from, to);
+              } catch {
+                //
+              }
+              storageFile.used = true;
+            })(join(shardStoragePath, file.name), join(shardPath, file.name))
+          );
         }
+
+        await Promise.all(promises);
       }
     }
 

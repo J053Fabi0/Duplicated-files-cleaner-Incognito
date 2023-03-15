@@ -1,6 +1,6 @@
 import run from "./run.ts";
 
-run();
+await run();
 
 //   try {
 //     console.group("Getting nodes' information.");
