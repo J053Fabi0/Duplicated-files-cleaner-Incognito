@@ -19,29 +19,27 @@ export default async function substituteFiles() {
       const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
       await Promise.all(
-        getFiles(shardPath).map((file) =>
-          (async () => {
-            // If the file is not in the storage directory, skip it.
-            // Because it is sorted from high to low, it will continue if the number is lower.
-            let storageFile = defaultStorageFile;
-            for (storageFile of shardStorageFiles) {
-              if (storageFile.number === file.number) break;
-              if (storageFile.number < file.number) return;
-            }
+        getFiles(shardPath).map(async (file) => {
+          // If the file is not in the storage directory, skip it.
+          // Because it is sorted from high to low, it will continue if the number is lower.
+          let storageFile = defaultStorageFile;
+          for (storageFile of shardStorageFiles) {
+            if (storageFile.number === file.number) break;
+            if (storageFile.number < file.number) return;
+          }
 
-            const from = join(shardStoragePath, file.name);
-            const to = join(shardPath, file.name);
+          const from = join(shardStoragePath, file.name);
+          const to = join(shardPath, file.name);
 
-            try {
-              await Deno.remove(to);
-              await Deno.link(from, to);
-            } catch {
-              //
-            }
+          try {
+            await Deno.remove(to);
+            await Deno.link(from, to);
+          } catch {
+            //
+          }
 
-            storageFile.used = true;
-          })()
-        )
+          storageFile.used = true;
+        })
       );
     }
 

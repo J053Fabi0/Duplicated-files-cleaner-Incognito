@@ -21,19 +21,16 @@ export default async function moveFilesToStorage() {
         .slice(filesToStrip)
         .filter((file) => file.isSymlink === false);
 
-      // create hard links all the files inside storageDirectory
       await Promise.all(
-        filesOfNode.map((file) =>
-          (async () => {
-            try {
-              // Create the hard link in the storage directory.
-              await Deno.link(join(shardPath, file.name), join(shardStoragePath, file.name));
-              shardStorageFiles.push({ ...file, used: false });
-            } catch {
-              // The file already exists.
-            }
-          })()
-        )
+        filesOfNode.map(async (file) => {
+          try {
+            // Create the hard link in the storage directory.
+            await Deno.link(join(shardPath, file.name), join(shardStoragePath, file.name));
+            shardStorageFiles.push({ ...file, used: false });
+          } catch {
+            // The file already exists.
+          }
+        })
       );
     }
 
