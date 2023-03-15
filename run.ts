@@ -27,7 +27,7 @@ for (const { shardName } of instructions) {
 
 export default function run() {
   try {
-    console.log(storageFiles.beacon.length);
+    console.log(storageFiles.shard3.length);
 
     // Move the new files to the storage directory.
     for (const { shardName, nodes } of instructions) {
@@ -54,7 +54,7 @@ export default function run() {
       storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
     }
 
-    console.log(storageFiles.beacon.length);
+    console.log(storageFiles.shard3.length);
 
     // Substitute files in nodes with the ones in storage.
     for (const { shardName, nodes } of instructions) {
