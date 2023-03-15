@@ -106,6 +106,8 @@ export default async function run() {
 
     // Delete the files that are not used.
     for (const { shardName } of instructions) {
+      console.group(`Deleting unused files in ${shardName}`);
+
       const shardStoragePath = join(homeStoragePath, shardName);
 
       const promises: Promise<void>[] = [];
@@ -114,6 +116,8 @@ export default async function run() {
         if (file.used === false) promises.push(Deno.remove(join(shardStoragePath, file.name)).catch(() => {}));
 
       await Promise.all(promises);
+      console.log(promises.length);
+      console.groupEnd();
     }
   } catch (e) {
     console.error(e);
