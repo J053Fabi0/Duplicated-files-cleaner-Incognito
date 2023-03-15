@@ -99,13 +99,12 @@ export default async function run() {
     for (const { shardName } of instructions) {
       const shardStoragePath = join(homeStoragePath, shardName);
 
+      const promises: Promise<void>[] = [];
+
       for (const file of storageFiles[shardName])
-        if (file.used === false)
-          try {
-            Deno.removeSync(join(shardStoragePath, file.name));
-          } catch {
-            //
-          }
+        if (file.used === false) promises.push(Deno.remove(join(shardStoragePath, file.name)).catch(() => {}));
+
+      await Promise.all(promises);
     }
   } catch (e) {
     console.error(e);
