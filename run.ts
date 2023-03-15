@@ -38,6 +38,8 @@ export default async function run() {
       console.log(shardStorageFiles.length);
 
       for (const node of nodes) {
+        console.log(`Prossesing node ${node}`);
+
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
         const filesOfNode = getFiles(shardPath)
           .slice(filesToStrip)
@@ -65,13 +67,17 @@ export default async function run() {
       console.groupEnd();
     }
 
+    console.log();
+
     // Substitute files in nodes with the ones in storage.
     for (const { shardName, nodes } of instructions) {
-      console.log(`Substituting files in ${shardName}`);
+      console.group(`Substituting files in ${shardName}`);
 
       const shardStoragePath = join(homeStoragePath, shardName);
 
       for (const node of nodes) {
+        console.log(`Prossesing node ${node}`);
+
         const shardStorageFiles = storageFiles[shardName];
         const defaultStorageFile = shardStorageFiles[0];
         const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
@@ -81,7 +87,7 @@ export default async function run() {
             (async () => {
               // If the file is not in the storage directory, skip it.
               // Because it is sorted from high to low, it will continue if the number is lower.
-              let storageFile: StorageFile = defaultStorageFile;
+              let storageFile = defaultStorageFile;
               for (storageFile of shardStorageFiles) {
                 if (storageFile.number === file.number) break;
                 if (storageFile.number < file.number) return;
@@ -102,13 +108,17 @@ export default async function run() {
           )
         );
       }
+
+      console.groupEnd();
     }
+
+    console.log();
 
     // Delete the files that are not used.
     for (const { shardName } of instructions) {
-      console.group(`Deleting unused files in ${shardName}`);
-
       const shardStoragePath = join(homeStoragePath, shardName);
+
+      console.group(`Deleting unused files in ${shardStoragePath}`);
 
       const promises: Promise<void>[] = [];
 
