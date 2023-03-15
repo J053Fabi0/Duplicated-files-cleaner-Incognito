@@ -54,6 +54,8 @@ export default function run() {
       storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
     }
 
+    console.log(storageFiles.beacon.length);
+
     // Substitute files in nodes with the ones in storage.
     for (const { shardName, nodes } of instructions) {
       const shardStoragePath = join(storageHomePath, shardName);
@@ -83,8 +85,6 @@ export default function run() {
         }
       }
     }
-
-    console.log(storageFiles.beacon.length);
   } catch (e) {
     console.error(e);
   }
