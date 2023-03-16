@@ -1,7 +1,7 @@
 export type File = Deno.DirEntry & { number: number };
 
 export default function getFiles(path: string) {
-  const files = [...Deno.readDirSync(path)]
+  const files = [...readOrCreateDirSync(path)]
     // only get the .ldb files
     .filter((a) => a.name.endsWith(".ldb")) as File[];
 
@@ -10,4 +10,13 @@ export default function getFiles(path: string) {
 
   // sort by number from highest to lowest
   return files.sort((a, b) => b.number - a.number);
+}
+
+function readOrCreateDirSync(path: string) {
+  try {
+    return Deno.readDirSync(path);
+  } catch {
+    Deno.mkdirSync(path, { recursive: true });
+    return Deno.readDirSync(path);
+  }
 }
