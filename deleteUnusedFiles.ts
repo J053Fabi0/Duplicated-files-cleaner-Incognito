@@ -14,9 +14,8 @@ export default async function deleteUnusedFiles() {
 
     const promises: Promise<void>[] = [];
 
-    // If the files is only used once or less there is no need to keep it.
     for (const file of storageFiles[shardName])
-      if (file.used <= 1) promises.push(Deno.remove(join(shardStoragePath, file.name)).catch(() => {}));
+      if (file.used === 0) promises.push(Deno.remove(join(shardStoragePath, file.name)).catch(() => {}));
 
     await Promise.all(promises);
     console.log(promises.length);
