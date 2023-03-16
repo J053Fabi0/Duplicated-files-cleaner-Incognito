@@ -4,7 +4,7 @@ import getFiles, { File } from "./utils/getFiles.ts";
 
 const { homePath, storageFolder, instructions } = constants;
 
-export type StorageFile = File & { used: boolean };
+export type StorageFile = File & { used: number };
 export type StorageFiles = Record<string, StorageFile[]>;
 export const homeStoragePath = join(homePath, storageFolder);
 
@@ -29,7 +29,7 @@ export default function getStorageFiles(ignoreCache = false): StorageFiles {
       Deno.mkdirSync(shardStoragePath, { recursive: true });
     }
 
-    storageFiles[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: false }));
+    storageFiles[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: 0 }));
   }
 
   cached = true;

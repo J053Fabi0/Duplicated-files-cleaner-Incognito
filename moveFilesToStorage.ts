@@ -26,7 +26,7 @@ export default async function moveFilesToStorage() {
           try {
             // Create the hard link in the storage directory.
             await Deno.link(join(shardPath, file.name), join(shardStoragePath, file.name));
-            shardStorageFiles.push({ ...file, used: false });
+            shardStorageFiles.push({ ...file, used: 0 });
           } catch {
             // The file already exists.
           }

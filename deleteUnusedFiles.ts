@@ -15,7 +15,7 @@ export default async function deleteUnusedFiles() {
     const promises: Promise<void>[] = [];
 
     for (const file of storageFiles[shardName])
-      if (file.used === false) promises.push(Deno.remove(join(shardStoragePath, file.name)).catch(() => {}));
+      if (file.used === 0) promises.push(Deno.remove(join(shardStoragePath, file.name)).catch(() => {}));
 
     await Promise.all(promises);
     console.log(promises.length);

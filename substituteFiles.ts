@@ -43,13 +43,32 @@ export default async function substituteFiles() {
             //
           }
 
-          storageFile.used = true;
+          storageFile.used++;
         })
       );
 
       console.log("Files removed:", filesRemoved, "\n");
       console.groupEnd();
     }
+
+    console.log(
+      "\nTotal files removed:",
+      Object.values(storageFiles).reduce(
+        (total, files) =>
+          total +
+          files.reduce(
+            (subTotal, file) =>
+              file.used <= 0
+                ? // if the file isn't used at least twice, it was really not removed.
+                  subTotal
+                : // The first file is not removed, only linked, so it is not counted.
+                  subTotal + file.used - 1,
+            0
+          ),
+        0
+      ),
+      "\n"
+    );
 
     console.groupEnd();
   }
