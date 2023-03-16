@@ -22,7 +22,7 @@ export default async function run() {
     await deleteUnusedFiles();
 
     if (fileSystem)
-      console.log("File system usage now:", await df(["-h", fileSystem, "--output=used,avail,pcent"]));
+      console.log("\nFile system usage now:\n", await df(["-h", fileSystem, "--output=used,avail,pcent"]));
   } catch (e) {
     console.error(e);
   }
