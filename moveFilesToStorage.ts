@@ -14,7 +14,8 @@ export default async function moveFilesToStorage() {
     const shardStoragePath = join(homeStoragePath, shardName);
 
     console.group(shardName);
-    console.log("Number of files:", shardStorageFiles.length);
+    const numberOfFiles = shardStorageFiles.length;
+    console.log("Number of files:", numberOfFiles);
 
     for (const node of nodes) {
       console.log(`Prossesing node ${node}`);
@@ -37,7 +38,7 @@ export default async function moveFilesToStorage() {
     // Sort the files from high to low.
     storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
 
-    console.log("Number of files:", storageFiles[shardName].length);
+    console.log("Number of files:", numberOfFiles - storageFiles[shardName].length);
     console.groupEnd();
   }
 }
