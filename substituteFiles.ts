@@ -14,12 +14,13 @@ export default async function substituteFiles() {
     const shardStoragePath = join(homeStoragePath, shardName);
 
     for (const node of nodes) {
-      console.log(`Prossesing node ${node}`);
+      console.group("Prossesing node", node);
 
       const shardStorageFiles = storageFiles[shardName];
       const defaultStorageFile = shardStorageFiles[0];
       const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
+      let filesRemoved = 0;
       await Promise.all(
         filesOfNodes[shardName][node].map(async (file) => {
           // If the file is not in the storage directory, skip it.
@@ -36,6 +37,7 @@ export default async function substituteFiles() {
           try {
             await Deno.remove(to);
             await Deno.link(from, to);
+            filesRemoved++;
           } catch {
             //
           }
@@ -43,6 +45,9 @@ export default async function substituteFiles() {
           storageFile.used = true;
         })
       );
+
+      console.log("Files removed:", filesRemoved);
+      console.groupEnd();
     }
 
     console.groupEnd();

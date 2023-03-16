@@ -10,7 +10,7 @@ const filesOfNodes: Record<string, Record<string, File[]>> = {};
 
 /**
  * Get the files of the nodes for each shard.
- * @param {boolean} ignoreCache Ignore the cache and get the files again.
+ * @param ignoreCache Ignore the cache and get the files again.
  * @return First key is the shard name, second key is the node number, and the value is an array of files.
  */
 export default async function getFilesOfNodes(ignoreCache = false) {
