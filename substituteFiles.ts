@@ -52,7 +52,7 @@ export default async function substituteFiles() {
     }
 
     console.log(
-      "\nTotal files removed:",
+      "Total files removed:",
       Object.values(storageFiles).reduce(
         (total, files) =>
           total +
@@ -66,8 +66,7 @@ export default async function substituteFiles() {
             0
           ),
         0
-      ),
-      "\n"
+      )
     );
 
     console.groupEnd();
