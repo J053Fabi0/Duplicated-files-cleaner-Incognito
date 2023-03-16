@@ -2,6 +2,8 @@ import constants from "../constants.ts";
 import binaryWrapper from "./binaryWrapper.ts";
 import repeatUntilNoError from "./repeatUntilNoError.ts";
 
+export const df = binaryWrapper("df");
+
 const { instructions } = constants;
 
 const _docker = binaryWrapper("docker");
