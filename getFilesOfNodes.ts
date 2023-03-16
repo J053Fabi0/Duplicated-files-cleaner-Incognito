@@ -21,9 +21,12 @@ export default async function getFilesOfNodes(ignoreCache = false) {
   for (const { shardName, nodes } of instructions) {
     filesOfNodes[shardName] = {};
     for (const node of nodes)
-      filesOfNodes[shardName][node] = getFiles(join(homePath, `/node_data_${node}/mainnet/block/${shardName}`))
-        // strip only if the node is online
-        .slice(dockerStatuses[`inc_mainnet_${node}`] === "ONLINE" ? filesToStripIfOnline : 0);
+      filesOfNodes[shardName][node] = getFiles(
+        join(homePath, `/node_data_${node}/mainnet/block/${shardName}`)
+      ).slice(
+        // strip only if the node is online and filesToStripIfOnline is positive
+        dockerStatuses[`inc_mainnet_${node}`] === "ONLINE" && filesToStripIfOnline >= 0 ? filesToStripIfOnline : 0
+      );
   }
 
   cached = true;

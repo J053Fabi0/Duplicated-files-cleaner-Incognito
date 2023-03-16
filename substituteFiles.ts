@@ -1,12 +1,14 @@
 import { join } from "./deps.ts";
 import constants from "./constants.ts";
+import { dockerPs } from "./utils/commands.ts";
 import getFilesOfNodes from "./getFilesOfNodes.ts";
 import getStorageFiles, { homeStoragePath } from "./getStorageFiles.ts";
 
-const { homePath, instructions } = constants;
+const { homePath, instructions, filesToStripIfOnline } = constants;
 
 export default async function substituteFiles() {
   const storageFiles = getStorageFiles();
+  const dockerStatuses = await dockerPs();
   const filesOfNodes = await getFilesOfNodes();
 
   for (const { shardName, nodes } of instructions) {
@@ -21,33 +23,35 @@ export default async function substituteFiles() {
       const defaultStorageFile = shardStorageFiles[0];
       const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
-      let filesRemoved = 0;
-      await Promise.all(
-        filesOfNodes[shardName][node].map(async (file) => {
-          // If the file is not in the storage directory, skip it.
-          // Because it is sorted from high to low, it will return if the files are already lower.
-          let storageFile = defaultStorageFile;
-          for (storageFile of shardStorageFiles) {
-            if (storageFile.number === file.number) break;
-            if (storageFile.number < file.number) return;
-          }
+      let filesProcessed = 0;
 
-          const from = join(shardStoragePath, file.name);
-          const to = join(shardPath, file.name);
+      // if filesToStripIfOnline is negative, only deal with offline nodes
+      if (filesToStripIfOnline < 0 && dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE")
+        await Promise.all(
+          filesOfNodes[shardName][node].map(async (file) => {
+            // If the file is not in the storage directory, skip it.
+            // Because it is sorted from high to low, it will return if the files are already lower.
+            let storageFile = defaultStorageFile;
+            for (storageFile of shardStorageFiles) {
+              if (storageFile.number === file.number) break;
+              if (storageFile.number < file.number) return;
+            }
 
-          try {
-            await Deno.remove(to);
-            await Deno.link(from, to);
-            filesRemoved++;
-          } catch {
-            //
-          }
+            const from = join(shardStoragePath, file.name);
+            const to = join(shardPath, file.name);
 
-          storageFile.used++;
-        })
-      );
+            try {
+              await Deno.remove(to);
+              await Deno.link(from, to);
+            } catch {
+              //
+            }
+            storageFile.used++;
+            filesProcessed++;
+          })
+        );
 
-      console.log("Files processed:", filesRemoved, "\n");
+      console.log("Files processed:", filesProcessed, "\n");
       console.groupEnd();
     }
 
