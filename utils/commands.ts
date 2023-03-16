@@ -1,12 +1,8 @@
-import repeatUntilNoError from "./repeatUntilNoError.ts";
-import binaryWrapper from "./binaryWrapper.ts";
 import constants from "../constants.ts";
-export const cp = binaryWrapper("cp");
-export const rm = binaryWrapper("rm");
-export const ls = binaryWrapper("ls");
-export const chown = binaryWrapper("chown");
+import binaryWrapper from "./binaryWrapper.ts";
+import repeatUntilNoError from "./repeatUntilNoError.ts";
 
-const { validatorPublicKeys } = constants;
+const { instructions } = constants;
 
 const _docker = binaryWrapper("docker");
 export const docker = (name: string | string[], action: "start" | "stop", maxRetries = 5) =>
@@ -22,6 +18,7 @@ let dockersStatus: DockersStatus | undefined = undefined;
 export const dockerPs = () =>
   _docker(["ps", "--all", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
     // Return the cached value if it exists.
+    // Otherwise create it.
     if (!dockersStatus) {
       dockersStatus = v
         // Get rid of a last "\n" that always has nothing.
@@ -34,21 +31,16 @@ export const dockerPs = () =>
           return obj;
         }, {} as DockersStatus);
 
-      for (const dockerIndex of Object.keys(validatorPublicKeys))
+      // Get all the nodes present in instructions
+      const allNodes = instructions.reduce((set, i) => {
+        for (const node of i.nodes) set.add(node);
+        return set;
+      }, new Set<number>());
+
+      for (const dockerIndex of allNodes)
         if (dockersStatus[`inc_mainnet_${dockerIndex}`] === undefined)
           dockersStatus[`inc_mainnet_${dockerIndex}`] = "OFFLINE";
     }
 
     return dockersStatus;
   });
-
-export function getExtraFiles(nodePathToShard: string) {
-  return ls([nodePathToShard], (v) =>
-    v
-      .split("\n")
-      // Get rid of a last "\n" that always has nothing.
-      .slice(0, -1)
-      // Filter every file that doesn't end with '.ldb'.
-      .filter((v) => v.endsWith(".ldb") === false)
-  );
-}

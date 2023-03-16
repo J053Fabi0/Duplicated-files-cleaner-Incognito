@@ -1,11 +1,13 @@
 import { join } from "./deps.ts";
 import constants from "./constants.ts";
-import getFiles from "./utils/getFiles.ts";
+import getFilesOfNodes from "./getFilesOfNodes.ts";
 import { homeStoragePath, storageFiles } from "./storageFiles.ts";
 
-const { homePath, instructions, filesToStrip } = constants;
+const { homePath, instructions } = constants;
 
 export default async function moveFilesToStorage() {
+  const filesOfNodes = await getFilesOfNodes();
+
   for (const { shardName, nodes } of instructions) {
     const shardStorageFiles = storageFiles[shardName];
     const shardStoragePath = join(homeStoragePath, shardName);
@@ -17,12 +19,9 @@ export default async function moveFilesToStorage() {
       console.log(`Prossesing node ${node}`);
 
       const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
-      const filesOfNode = getFiles(shardPath)
-        .slice(filesToStrip)
-        .filter((file) => file.isSymlink === false);
 
       await Promise.all(
-        filesOfNode.map(async (file) => {
+        filesOfNodes[shardName][node].map(async (file) => {
           try {
             // Create the hard link in the storage directory.
             await Deno.link(join(shardPath, file.name), join(shardStoragePath, file.name));

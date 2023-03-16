@@ -1,11 +1,13 @@
 import { join } from "./deps.ts";
 import constants from "./constants.ts";
-import getFiles from "./utils/getFiles.ts";
+import getFilesOfNodes from "./getFilesOfNodes.ts";
 import { homeStoragePath, storageFiles } from "./storageFiles.ts";
 
 const { homePath, instructions } = constants;
 
 export default async function substituteFiles() {
+  const filesOfNodes = await getFilesOfNodes();
+
   for (const { shardName, nodes } of instructions) {
     console.group(`Substituting files in ${shardName}`);
 
@@ -19,9 +21,9 @@ export default async function substituteFiles() {
       const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
       await Promise.all(
-        getFiles(shardPath).map(async (file) => {
+        filesOfNodes[shardName][node].map(async (file) => {
           // If the file is not in the storage directory, skip it.
-          // Because it is sorted from high to low, it will continue if the number is lower.
+          // Because it is sorted from high to low, it will return if the files are already lower.
           let storageFile = defaultStorageFile;
           for (storageFile of shardStorageFiles) {
             if (storageFile.number === file.number) break;
