@@ -47,7 +47,7 @@ export default async function substituteFiles() {
         })
       );
 
-      console.log("Files removed:", filesRemoved, "\n");
+      console.log("Files processed:", filesRemoved, "\n");
       console.groupEnd();
     }
 
