@@ -38,7 +38,7 @@ export default async function moveFilesToStorage() {
     // Sort the files from high to low.
     storageFiles[shardName] = storageFiles[shardName].sort((a, b) => b.number - a.number);
 
-    console.log("Number of files:", numberOfFiles - storageFiles[shardName].length);
+    console.log("Net change of files:", storageFiles[shardName].length - numberOfFiles);
     console.groupEnd();
   }
 }
