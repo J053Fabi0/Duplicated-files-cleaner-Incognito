@@ -1,11 +1,12 @@
 import { join } from "./deps.ts";
 import constants from "./constants.ts";
 import getFilesOfNodes from "./getFilesOfNodes.ts";
-import { homeStoragePath, storageFiles } from "./storageFiles.ts";
+import getStorageFiles, { homeStoragePath } from "./getStorageFiles.ts";
 
 const { homePath, instructions } = constants;
 
 export default async function substituteFiles() {
+  const storageFiles = getStorageFiles();
   const filesOfNodes = await getFilesOfNodes();
 
   for (const { shardName, nodes } of instructions) {

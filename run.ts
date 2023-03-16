@@ -1,15 +1,14 @@
+import constants from "./constants.ts";
+import { df } from "./utils/commands.ts";
 import substituteFiles from "./substituteFiles.ts";
 import deleteUnusedFiles from "./deleteUnusedFiles.ts";
 import moveFilesToStorage from "./moveFilesToStorage.ts";
-import constants from "./constants.ts";
-import { df } from "./utils/commands.ts";
 
 const { fileSystem } = constants;
 
 export default async function run() {
   try {
-    if (fileSystem)
-      console.log("File system usage:", await df(["-h", fileSystem, "--output=used,avail,pcent"]), "\n");
+    if (fileSystem) console.log("File system usage:\n", await df(["-h", fileSystem, "--output=used,avail,pcent"]));
 
     // Move the new files to the storage directory.
     await moveFilesToStorage();

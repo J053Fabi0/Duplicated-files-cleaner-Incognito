@@ -1,10 +1,12 @@
 import { join } from "./deps.ts";
 import constants from "./constants.ts";
-import { homeStoragePath, storageFiles } from "./storageFiles.ts";
+import getStorageFiles, { homeStoragePath } from "./getStorageFiles.ts";
 
 const { instructions } = constants;
 
 export default async function deleteUnusedFiles() {
+  const storageFiles = getStorageFiles();
+
   for (const { shardName } of instructions) {
     const shardStoragePath = join(homeStoragePath, shardName);
 
