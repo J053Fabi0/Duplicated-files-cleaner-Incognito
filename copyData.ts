@@ -19,24 +19,24 @@ export default async function copyData(from: string, to: string, shard: string) 
       ...allLdbFiles.slice(0, filesToStripIfOffline >= 0 ? filesToStripIfOffline : 0),
     ];
 
-    console.log("Empty the destination directory");
+    console.log("Emptying the destination directory");
     // If the file exists, delete it
     Deno.remove(toShardPath, { recursive: true }).catch(() => {});
     Deno.mkdirSync(toShardPath, { recursive: true });
 
-    console.log("Copy the ldb files with hard links");
+    console.log("Copying the ldb files with hard links");
     await Promise.all(
       ldbFiles.map((file) => Deno.link(join(fromShardPath, file.name), join(toShardPath, file.name)))
     );
 
-    console.log("Copy the rest of the files with copy, including directories");
-    for (const file of otherFiles) copyFileOrDir(fromShardPath, toShardPath, file);
+    console.log("Copying the rest of the files with copy, including directories");
+    await Promise.all(otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file)));
   } catch (e) {
     console.error(e);
   }
 }
 
-function copyFileOrDir(fromPath: string, toPath: string, file: Deno.DirEntry) {
+async function copyFileOrDir(fromPath: string, toPath: string, file: Deno.DirEntry) {
   const fromFilePath = join(fromPath, file.name);
   const toFilePath = join(toPath, file.name);
 
@@ -46,9 +46,11 @@ function copyFileOrDir(fromPath: string, toPath: string, file: Deno.DirEntry) {
     Deno.mkdirSync(toFilePath, { recursive: true });
 
     // Copy the contents of the directory into the new directory recursively
-    for (const dirFile of Deno.readDirSync(fromFilePath)) copyFileOrDir(fromFilePath, toFilePath, dirFile);
+    await Promise.all(
+      [...Deno.readDirSync(fromFilePath)].map((dirFile) => copyFileOrDir(fromFilePath, toFilePath, dirFile))
+    );
   }
   //
   // Else just copy the file
-  else Deno.copyFileSync(fromFilePath, toFilePath);
+  else await Deno.copyFile(fromFilePath, toFilePath);
 }
