@@ -41,14 +41,14 @@ export default async function copyData(from: string, to: string, shard: string) 
         bars.render([{ completed: i, total: otherFiles.length, text: "\n" }]);
         await new Promise((resolve) => setTimeout(resolve, 150));
       }
-      bars.render([{ completed: otherFiles.length, total: otherFiles.length, text: "\n" }]);
     })();
 
-    console.log("Copying the rest of the files with copy, including directories");
+    console.log("Copying the rest of the files with copy, including directories\n");
     await Promise.all(
       otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => void i++))
     );
     i = Infinity;
+    bars.render([{ completed: otherFiles.length, total: otherFiles.length, text: "\n" }]);
   } catch (e) {
     console.error(e);
   }
