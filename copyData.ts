@@ -19,17 +19,17 @@ export default async function copyData(from: string, to: string, shard: string) 
       ...allLdbFiles.slice(0, filesToStripIfOffline >= 0 ? filesToStripIfOffline : 0),
     ];
 
-    // Empty the destination directory
+    console.log("Empty the destination directory");
     // If the file exists, delete it
     Deno.remove(toShardPath, { recursive: true }).catch(() => {});
     Deno.mkdirSync(toShardPath, { recursive: true });
 
-    // Copy the ldb files with hard links
+    console.log("Copy the ldb files with hard links");
     await Promise.all(
       ldbFiles.map((file) => Deno.link(join(fromShardPath, file.name), join(toShardPath, file.name)))
     );
 
-    // Copy the rest of the files with copy, including directories
+    console.log("Copy the rest of the files with copy, including directories");
     for (const file of otherFiles) copyFileOrDir(fromShardPath, toShardPath, file);
   } catch (e) {
     console.error(e);
