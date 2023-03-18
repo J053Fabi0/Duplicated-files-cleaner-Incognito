@@ -38,7 +38,7 @@ export default async function copyData(from: string, to: string, shard: string) 
     let i = 0;
     (async () => {
       while (i !== Infinity) {
-        bars.render([{ completed: i, total: otherFiles.length }]);
+        bars.render([{ completed: i, total: otherFiles.length, text: "\n" }]);
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
       bars.end();
