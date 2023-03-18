@@ -1,4 +1,4 @@
-import { join, ProgressBar, percentageWidget, amountWidget } from "./deps.ts";
+import { join, Progressbar } from "./deps.ts";
 import constants from "./constants.ts";
 import getFiles from "./utils/getFiles.ts";
 
@@ -29,23 +29,19 @@ export default async function copyData(from: string, to: string, shard: string) 
       ldbFiles.map((file) => Deno.link(join(fromShardPath, file.name), join(toShardPath, file.name)))
     );
 
-    const pb = new ProgressBar({ total: otherFiles.length, widgets: [percentageWidget, amountWidget] });
-    let i = 0;
-    (async () => {
-      while (i < Infinity) {
-        console.log(i);
-        await pb.update(i);
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-    })();
+    const bar = new Progressbar(":bar   :percent | :current-:total | :etas", {
+      width: 50,
+      complete: "#",
+      incomplete: ".",
+      total: otherFiles.length,
+    });
 
     console.log("Copying the rest of the files with copy, including directories");
     await Promise.all(
-      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => void i++))
+      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => bar.tick(1)))
     );
 
-    i = Infinity;
-    pb.finish();
+    bar.terminate();
   } catch (e) {
     console.error(e);
   }
