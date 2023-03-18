@@ -1,10 +1,10 @@
-import { join } from "./deps.ts";
-import constants from "./constants.ts";
-import getFiles, { File } from "./utils/getFiles.ts";
+import { join } from "../deps.ts";
+import constants from "../constants.ts";
+import getFiles, { LDBFile } from "../utils/getFiles.ts";
 
 const { homePath, storageFolder, instructions } = constants;
 
-export type StorageFile = File & { used: number };
+export type StorageFile = LDBFile & { used: number };
 export type StorageFiles = Record<string, StorageFile[]>;
 export const homeStoragePath = join(homePath, storageFolder);
 

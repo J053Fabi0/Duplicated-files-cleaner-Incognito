@@ -1,5 +1,5 @@
-import constants from "./constants.ts";
-import { df } from "./utils/commands.ts";
+import constants from "../constants.ts";
+import { df } from "../utils/commands.ts";
 import substituteFiles from "./substituteFiles.ts";
 import deleteUnusedFiles from "./deleteUnusedFiles.ts";
 import moveFilesToStorage from "./moveFilesToStorage.ts";

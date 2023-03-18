@@ -1,12 +1,12 @@
-import { join } from "./deps.ts";
-import constants from "./constants.ts";
-import { dockerPs } from "./utils/commands.ts";
-import getFiles, { File } from "./utils/getFiles.ts";
+import { join } from "../deps.ts";
+import constants from "../constants.ts";
+import { dockerPs } from "../utils/commands.ts";
+import getFiles, { LDBFile } from "../utils/getFiles.ts";
 
 const { instructions, homePath, filesToStripIfOnline, filesToStripIfOffline } = constants;
 
 let cached = false;
-const filesOfNodes: Record<string, Record<string, File[]>> = {};
+const filesOfNodes: Record<string, Record<string, LDBFile[]>> = {};
 
 /**
  * Get the nodes' files for each shard.

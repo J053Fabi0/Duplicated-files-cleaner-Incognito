@@ -1,6 +1,6 @@
-import { join } from "./deps.ts";
-import constants from "./constants.ts";
-import getStorageFiles, { homeStoragePath } from "./getStorageFiles.ts";
+import { join } from "../deps.ts";
+import constants from "../constants.ts";
+import getStorageFiles, { homeStoragePath } from "../utils/getStorageFiles.ts";
 
 const { instructions } = constants;
 

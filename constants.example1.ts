@@ -11,7 +11,9 @@ const constants: Constants = {
   // A lower number will save more storage, but you risk corrupting the data as you may remove a file
   // that is still being modified by the node.
   // This parameter is only used for online nodes. If it's negative, it will ignore them.
+  // 30_000 or 20_000 are considered safe values.
   filesToStripIfOnline: -1,
+  filesToStripIfOffline: 10_000,
 
   instructions: [
     {

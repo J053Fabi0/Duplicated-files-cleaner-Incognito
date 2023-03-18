@@ -1,8 +1,8 @@
-import { join } from "./deps.ts";
-import constants from "./constants.ts";
-import { dockerPs } from "./utils/commands.ts";
-import getFilesOfNodes from "./getFilesOfNodes.ts";
-import getStorageFiles, { homeStoragePath } from "./getStorageFiles.ts";
+import { join } from "../deps.ts";
+import constants from "../constants.ts";
+import { dockerPs } from "../utils/commands.ts";
+import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
+import getStorageFiles, { homeStoragePath } from "../utils/getStorageFiles.ts";
 
 const { homePath, instructions, filesToStripIfOnline } = constants;
 
