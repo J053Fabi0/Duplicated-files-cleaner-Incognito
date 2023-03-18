@@ -31,12 +31,19 @@ export default async function copyData(from: string, to: string, shard: string) 
 
     const pb = new ProgressBar({ total: otherFiles.length, widgets: [percentageWidget, amountWidget] });
     let i = 0;
+    (async () => {
+      while (i < Infinity) {
+        await pb.update(i);
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    })();
 
     console.log("Copying the rest of the files with copy, including directories");
     await Promise.all(
-      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => pb.update(++i)))
+      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => void i++))
     );
 
+    i = Infinity;
     pb.finish();
   } catch (e) {
     console.error(e);
