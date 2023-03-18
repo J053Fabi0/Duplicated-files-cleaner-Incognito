@@ -1,3 +1,4 @@
+import copyData from "./copyData.ts";
 import run from "./run/run.ts";
 
 // if --help or -h is passed, show the help message
@@ -11,4 +12,5 @@ const [from = "", to = "", shard = "beacon"] = Deno.args;
 
 if (from && to) {
   console.log(`Moving ${shard} files from ${from} to ${to}`);
+  await copyData(from, to, shard);
 } else await run();
