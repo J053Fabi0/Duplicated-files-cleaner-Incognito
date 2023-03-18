@@ -21,7 +21,7 @@ export default async function copyData(from: string, to: string, shard: string) 
 
     console.log("Emptying the destination directory");
     // If the file exists, delete it
-    Deno.remove(toShardPath, { recursive: true }).catch(() => {});
+    await Deno.remove(toShardPath, { recursive: true }).catch(() => {});
     Deno.mkdirSync(toShardPath, { recursive: true });
 
     console.log("Copying the ldb files with hard links");
