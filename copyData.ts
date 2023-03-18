@@ -1,8 +1,14 @@
-import { join, Progressbar } from "./deps.ts";
+import { join, MultiProgressBar } from "./deps.ts";
 import constants from "./constants.ts";
 import getFiles from "./utils/getFiles.ts";
 
 const { homePath, filesToStripIfOffline } = constants;
+
+const bars = new MultiProgressBar({
+  complete: "#",
+  incomplete: ".",
+  display: "[:bar] :text :percent :completed/:total :time",
+});
 
 export default async function copyData(from: string, to: string, shard: string) {
   try {
@@ -29,19 +35,20 @@ export default async function copyData(from: string, to: string, shard: string) 
       ldbFiles.map((file) => Deno.link(join(fromShardPath, file.name), join(toShardPath, file.name)))
     );
 
-    const bar = new Progressbar(":bar   :percent | :current-:total | :etas", {
-      width: 50,
-      complete: "#",
-      incomplete: ".",
-      total: otherFiles.length,
-    });
+    let i = 0;
+    (async () => {
+      while (i !== Infinity) {
+        bars.render([{ completed: i, total: otherFiles.length }]);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+      bars.end();
+    })();
 
     console.log("Copying the rest of the files with copy, including directories");
     await Promise.all(
-      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => bar.tick(1)))
+      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => void i++))
     );
-
-    bar.terminate();
+    i = Infinity;
   } catch (e) {
     console.error(e);
   }
