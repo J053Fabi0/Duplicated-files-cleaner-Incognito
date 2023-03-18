@@ -39,9 +39,9 @@ export default async function copyData(from: string, to: string, shard: string) 
     (async () => {
       while (i !== Infinity) {
         bars.render([{ completed: i, total: otherFiles.length, text: "\n" }]);
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 150));
       }
-      bars.end();
+      bars.render([{ completed: otherFiles.length, total: otherFiles.length, text: "\n" }]);
     })();
 
     console.log("Copying the rest of the files with copy, including directories");
