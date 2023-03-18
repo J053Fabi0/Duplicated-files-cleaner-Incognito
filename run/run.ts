@@ -8,7 +8,7 @@ const { fileSystem } = constants;
 
 export default async function run() {
   try {
-    if (fileSystem) console.log("File system usage:\n", await df(["-h", fileSystem, "--output=used,avail,pcent"]));
+    const firstData = fileSystem ? await df(["-h", fileSystem, "--output=used,avail,pcent"]) : "";
 
     // Move the new files to the storage directory.
     await moveFilesToStorage();
@@ -22,7 +22,7 @@ export default async function run() {
     await deleteUnusedFiles();
 
     if (fileSystem)
-      console.log("\nFile system usage now:\n", await df(["-h", fileSystem, "--output=used,avail,pcent"]));
+      console.log("\n", firstData, "\n", (await df(["-h", fileSystem, "--output=used,avail,pcent"])).slice(1));
   } catch (e) {
     console.error(e);
   }
