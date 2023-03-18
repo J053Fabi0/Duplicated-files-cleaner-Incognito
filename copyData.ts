@@ -19,7 +19,9 @@ export default async function copyData(from: string, to: string, shard: string) 
       ...allLdbFiles.slice(0, filesToStripIfOffline >= 0 ? filesToStripIfOffline : 0),
     ];
 
-    // Create the shard directory if it doesn't exist
+    // Empty the destination directory
+    // If the file exists, delete it
+    Deno.remove(toShardPath, { recursive: true }).catch(() => {});
     Deno.mkdirSync(toShardPath, { recursive: true });
 
     // Copy the ldb files with hard links
