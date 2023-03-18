@@ -33,8 +33,9 @@ export default async function copyData(from: string, to: string, shard: string) 
     let i = 0;
     (async () => {
       while (i < Infinity) {
+        console.log(i);
         await pb.update(i);
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 1000));
       }
     })();
 
