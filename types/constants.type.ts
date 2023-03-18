@@ -13,5 +13,6 @@ export default interface Constants {
   storageFolder: string;
   instructions: Instruction[];
   filesToStripIfOnline: number;
+  filesToStripIfOffline: number;
   validatorPublicKeys?: ValidatorPublicKeys;
 }

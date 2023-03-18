@@ -3,13 +3,13 @@ import constants from "./constants.ts";
 import { dockerPs } from "./utils/commands.ts";
 import getFiles, { File } from "./utils/getFiles.ts";
 
-const { instructions, homePath, filesToStripIfOnline } = constants;
+const { instructions, homePath, filesToStripIfOnline, filesToStripIfOffline } = constants;
 
 let cached = false;
 const filesOfNodes: Record<string, Record<string, File[]>> = {};
 
 /**
- * Get the files of the nodes for each shard.
+ * Get the nodes' files for each shard.
  * @param ignoreCache Ignore the cache and get the files again.
  * @return First key is the shard name, second key is the node number, and the value is an array of files.
  */
@@ -25,7 +25,11 @@ export default async function getFilesOfNodes(ignoreCache = false) {
         join(homePath, `/node_data_${node}/mainnet/block/${shardName}`)
       ).slice(
         // strip only if the node is online and filesToStripIfOnline is positive
-        dockerStatuses[`inc_mainnet_${node}`] === "ONLINE" && filesToStripIfOnline >= 0 ? filesToStripIfOnline : 0
+        dockerStatuses[`inc_mainnet_${node}`] === "ONLINE" && filesToStripIfOnline >= 0
+          ? filesToStripIfOnline
+          : dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE" && filesToStripIfOffline >= 0
+          ? filesToStripIfOffline
+          : 0
       );
   }
 
