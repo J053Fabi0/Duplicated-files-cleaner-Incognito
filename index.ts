@@ -16,16 +16,22 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
 
 if (Deno.args[0] === "info") {
   const dockerStatus = await dockerPs();
-  const nodes = Object.keys(dockerStatus).map(Number);
+  const nodes = Object.keys(dockerStatus);
   const filesOfNodes = await getFilesOfNodes();
 
   const shards = Object.keys(filesOfNodes);
 
   for (const node of nodes) {
     console.group(`\nNode ${node}:`);
-    const info = shards.reduce((obj, shard) => ((obj[shard] = filesOfNodes[shard][node].length), obj), {
-      docker: dockerStatus[node],
-    } as Record<string, number | string>);
+    const info = shards.reduce(
+      (obj, shard) => {
+        if (filesOfNodes[shard][node]) obj[shard] = filesOfNodes[shard][node].length;
+        return obj;
+      },
+      {
+        docker: dockerStatus[node],
+      } as Record<string, number | string>
+    );
     console.table(info);
     console.groupEnd();
   }
