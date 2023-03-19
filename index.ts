@@ -3,6 +3,8 @@ import copyData from "./copyData.ts";
 import constants from "./constants.ts";
 import { df, dockerPs } from "./utils/commands.ts";
 import getFilesOfNodes from "./utils/getFilesOfNodes.ts";
+import { shardsNames } from "./types/shards.type.ts";
+import getAllNodes from "./utils/getAllNodes.ts";
 
 const { fileSystem } = constants;
 
@@ -10,20 +12,18 @@ const { fileSystem } = constants;
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
   console.log("Usage: deno task run");
   console.log("Usage to copy files: deno task run [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
-  console.log("Usage to get nodes' info: deno task run info");
+  console.log("Usage to get nodes' info: deno task run info [...nodeIndexes=all]");
   Deno.exit();
 }
 
 if (Deno.args[0] === "info") {
   const dockerStatus = await dockerPs();
-  const nodes = Object.keys(dockerStatus);
-  const filesOfNodes = await getFilesOfNodes(undefined, true);
-
-  const shards = Object.keys(filesOfNodes);
+  const nodes = Deno.args.slice(1).length ? Deno.args.slice(1) : getAllNodes();
+  const filesOfNodes = await getFilesOfNodes({ allShards: true, strip: false });
 
   for (const node of nodes) {
     console.group(`\nNode ${node}:`);
-    const info = shards.reduce(
+    const info = shardsNames.reduce(
       (obj, shard) => {
         if (filesOfNodes[shard][node].length >= 30) obj[shard] = filesOfNodes[shard][node].length;
         return obj;

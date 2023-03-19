@@ -1,11 +1,8 @@
-import constants from "../constants.ts";
 import binaryWrapper from "./binaryWrapper.ts";
 import getAllNodes from "./getAllNodes.ts";
 import repeatUntilNoError from "./repeatUntilNoError.ts";
 
 export const df = binaryWrapper("df");
-
-const { instructions } = constants;
 
 const _docker = binaryWrapper("docker");
 export const docker = (name: string | string[], action: "start" | "stop", maxRetries = 5) =>
