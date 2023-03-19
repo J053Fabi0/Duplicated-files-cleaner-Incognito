@@ -11,3 +11,15 @@ export type ShardsNames =
   | "shard5"
   | "shard6"
   | "shard7";
+
+export const shardsNames = [
+  "beacon",
+  "shard0",
+  "shard1",
+  "shard2",
+  "shard3",
+  "shard4",
+  "shard5",
+  "shard6",
+  "shard7",
+] as const;

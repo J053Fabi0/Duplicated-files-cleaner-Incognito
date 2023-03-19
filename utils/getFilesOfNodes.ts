@@ -1,6 +1,8 @@
 import { join } from "../deps.ts";
 import constants from "../constants.ts";
+import getAllNodes from "./getAllNodes.ts";
 import { dockerPs } from "../utils/commands.ts";
+import { shardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
 
 const { instructions, homePath, filesToStripIfOnline, filesToStripIfOffline } = constants;
@@ -11,14 +13,20 @@ const filesOfNodes: Record<string, Record<string, LDBFile[]>> = {};
 /**
  * Get the nodes' files for each shard.
  * @param ignoreCache Ignore the cache and get the files again.
+ * @param allShards Get the files of all shards, not just the ones in the instructions.
  * @return First key is the shard name, second key is the node number, and the value is an array of files.
  */
-export default async function getFilesOfNodes(ignoreCache = false) {
+export default async function getFilesOfNodes(ignoreCache = false, allShards = false) {
   if (cached && ignoreCache === false) return filesOfNodes;
 
   const dockerStatuses = await dockerPs();
 
-  for (const { shardName, nodes } of instructions) {
+  const allNodes = getAllNodes();
+  const newInstructions = allShards
+    ? shardsNames.map((shardName) => ({ shardName, nodes: allNodes }))
+    : instructions;
+
+  for (const { shardName, nodes } of newInstructions) {
     filesOfNodes[shardName] = {};
     for (const node of nodes)
       filesOfNodes[shardName][node] = getFiles(

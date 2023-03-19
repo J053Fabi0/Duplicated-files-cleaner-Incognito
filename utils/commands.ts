@@ -1,5 +1,6 @@
 import constants from "../constants.ts";
 import binaryWrapper from "./binaryWrapper.ts";
+import getAllNodes from "./getAllNodes.ts";
 import repeatUntilNoError from "./repeatUntilNoError.ts";
 
 export const df = binaryWrapper("df");
@@ -34,10 +35,7 @@ export const dockerPs = () =>
         }, {} as DockersStatus);
 
       // Get all the nodes present in instructions
-      const allNodes = instructions.reduce((set, i) => {
-        for (const node of i.nodes) set.add(node);
-        return set;
-      }, new Set<number>());
+      const allNodes = getAllNodes();
 
       dockersStatus = {};
       for (const dockerIndex of allNodes) dockersStatus[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";

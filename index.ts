@@ -17,7 +17,7 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
 if (Deno.args[0] === "info") {
   const dockerStatus = await dockerPs();
   const nodes = Object.keys(dockerStatus);
-  const filesOfNodes = await getFilesOfNodes();
+  const filesOfNodes = await getFilesOfNodes(undefined, true);
 
   const shards = Object.keys(filesOfNodes);
 
@@ -25,7 +25,7 @@ if (Deno.args[0] === "info") {
     console.group(`\nNode ${node}:`);
     const info = shards.reduce(
       (obj, shard) => {
-        if (filesOfNodes[shard][node]) obj[shard] = filesOfNodes[shard][node].length;
+        if (filesOfNodes[shard][node].length >= 30) obj[shard] = filesOfNodes[shard][node].length;
         return obj;
       },
       {
