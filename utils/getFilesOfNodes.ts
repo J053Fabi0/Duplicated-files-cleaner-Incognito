@@ -27,7 +27,8 @@ export default async function getFilesOfNodes(ignoreCache = false) {
         // strip only if the node is online and filesToStripIfOnline is positive
         dockerStatuses[`inc_mainnet_${node}`] === "ONLINE" && filesToStripIfOnline >= 0
           ? filesToStripIfOnline
-          : dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE" && filesToStripIfOffline >= 0
+          : // or if the node is offline and filesToStripIfOffline is positive
+          dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE" && filesToStripIfOffline >= 0
           ? filesToStripIfOffline
           : 0
       );

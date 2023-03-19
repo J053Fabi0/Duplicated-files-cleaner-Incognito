@@ -50,6 +50,7 @@ export default async function substituteFiles() {
             filesProcessed++;
           })
         );
+      else console.log("Skipping node", node, "because it is online.");
 
       console.log("Files processed:", filesProcessed, "\n");
       console.groupEnd();
