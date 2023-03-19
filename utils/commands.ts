@@ -18,7 +18,7 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
 type DockersStatus = Record<string, "ONLINE" | "OFFLINE">;
 let dockersStatus: DockersStatus | undefined = undefined;
 export const dockerPs = () =>
-  _docker(["ps", "--all", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
+  _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
     // Return the cached value if it exists.
     // Otherwise create it.
     if (!dockersStatus) {
