@@ -26,6 +26,10 @@ export default async function substituteFiles() {
       let filesProcessed = 0;
 
       // if filesToStripIfOnline is negative, only deal with offline nodes
+      console.log(filesToStripIfOnline);
+      console.log(filesToStripIfOnline < 0);
+      console.log(dockerStatuses[`inc_mainnet_${node}`]);
+      console.log(dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE");
       if (filesToStripIfOnline < 0 && dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE")
         await Promise.all(
           filesOfNodes[shardName][node].map(async (file) => {

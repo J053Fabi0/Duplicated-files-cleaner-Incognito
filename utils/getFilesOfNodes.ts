@@ -18,8 +18,6 @@ export default async function getFilesOfNodes(ignoreCache = false) {
 
   const dockerStatuses = await dockerPs();
 
-  console.table(dockerStatuses);
-
   for (const { shardName, nodes } of instructions) {
     filesOfNodes[shardName] = {};
     for (const node of nodes)
