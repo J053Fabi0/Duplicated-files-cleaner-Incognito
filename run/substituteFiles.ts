@@ -26,11 +26,9 @@ export default async function substituteFiles() {
       let filesProcessed = 0;
 
       // if filesToStripIfOnline is negative, only deal with offline nodes
-      console.log(filesToStripIfOnline);
-      console.log(filesToStripIfOnline < 0);
-      console.log(dockerStatuses[`inc_mainnet_${node}`]);
-      console.log(dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE");
-      if (filesToStripIfOnline < 0 && dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE")
+      if (filesToStripIfOnline < 0 && dockerStatuses[`inc_mainnet_${node}`] === "ONLINE")
+        console.log("Skipping node", node, "because it is online and filesToStripIfOffline is negative.");
+      else
         await Promise.all(
           filesOfNodes[shardName][node].map(async (file) => {
             // If the file is not in the storage directory, skip it.
@@ -54,7 +52,6 @@ export default async function substituteFiles() {
             filesProcessed++;
           })
         );
-      else console.log("Skipping node", node, "because it is online.");
 
       console.log("Files processed:", filesProcessed, "\n");
       console.groupEnd();
@@ -75,7 +72,8 @@ export default async function substituteFiles() {
             0
           ),
         0
-      )
+      ),
+      "\n"
     );
 
     console.groupEnd();

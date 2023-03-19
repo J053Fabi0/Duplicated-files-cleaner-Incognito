@@ -10,7 +10,6 @@ export default async function run() {
 
     // Substitute files in nodes with the ones in storage.
     await substituteFiles();
-    console.log();
 
     // Delete the files that are not used.
     await deleteUnusedFiles();
