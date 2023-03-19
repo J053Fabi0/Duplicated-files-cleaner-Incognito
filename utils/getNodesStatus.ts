@@ -26,7 +26,7 @@ export default async function getNodesStatus() {
       nodesStatus[nodeIndex] = {
         role: "UNKNOWN",
         epochsToNextEvent: 0,
-        skip: dockerStatus[`inc_mainnet_${nodeIndex}`] === "ONLINE",
+        skip: dockerStatus[nodeIndex] === "ONLINE",
       };
     return nodesStatus;
   }

@@ -25,10 +25,10 @@ export default async function getFilesOfNodes(ignoreCache = false) {
         join(homePath, `/node_data_${node}/mainnet/block/${shardName}`)
       ).slice(
         // strip only if the node is online and filesToStripIfOnline is positive
-        dockerStatuses[`inc_mainnet_${node}`] === "ONLINE" && filesToStripIfOnline >= 0
+        dockerStatuses[node] === "ONLINE" && filesToStripIfOnline >= 0
           ? filesToStripIfOnline
           : // or if the node is offline and filesToStripIfOffline is positive
-          dockerStatuses[`inc_mainnet_${node}`] === "OFFLINE" && filesToStripIfOffline >= 0
+          dockerStatuses[node] === "OFFLINE" && filesToStripIfOffline >= 0
           ? filesToStripIfOffline
           : 0
       );

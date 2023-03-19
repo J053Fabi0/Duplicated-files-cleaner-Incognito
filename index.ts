@@ -8,8 +8,8 @@ const { fileSystem } = constants;
 
 // if --help or -h is passed, show the help message
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
-  console.log(`Usage: deno task run index.ts`);
-  console.log(`Usage to copy files: deno task run index.ts [fromNodeIndex] [toNodeIndex] [shard=beacon]`);
+  console.log("Usage: deno task run");
+  console.log("Usage to copy files: deno task run [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
   console.log("Usage to get nodes' info: deno task run info");
   Deno.exit();
 }

@@ -22,14 +22,14 @@ export const dockerPs = () =>
     // Return the cached value if it exists.
     // Otherwise create it.
     if (!dockersStatus) {
-      dockersStatus = v
+      const tempDockersStatus = v
         // Get rid of a last "\n" that always has nothing.
         .slice(0, -1)
         .split("\n")
         // Remove the first line that is the header.
         .slice(1)
         .reduce((obj, v) => {
-          obj[/inc_mainnet_\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
+          obj[/(?<=inc_mainnet_)\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
           return obj;
         }, {} as DockersStatus);
 
@@ -39,9 +39,8 @@ export const dockerPs = () =>
         return set;
       }, new Set<number>());
 
-      for (const dockerIndex of allNodes)
-        if (dockersStatus[`inc_mainnet_${dockerIndex}`] === undefined)
-          dockersStatus[`inc_mainnet_${dockerIndex}`] = "OFFLINE";
+      dockersStatus = {};
+      for (const dockerIndex of allNodes) dockersStatus[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
     }
 
     return dockersStatus;
