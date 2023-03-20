@@ -11,7 +11,7 @@ const { fileSystem } = constants;
 
 // if --help or -h is passed, show the help message
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
-  console.log("\nUsage:");
+  console.log("Usage to remove duplicated files:");
   console.log("    deno task run");
 
   console.log("\nUsage to copy shards:");
