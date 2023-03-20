@@ -45,7 +45,7 @@ switch (Deno.args[0]) {
   }
 
   case "move": {
-    await move(homePath, Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
+    await duplicatedFilesCleaner.move(Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
     break;
   }
 

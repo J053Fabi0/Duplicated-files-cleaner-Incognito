@@ -1,16 +1,16 @@
 import { join } from "./deps.ts";
-import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
 import normalizeShards from "./utils/normalizeShards.ts";
+import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
+import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
 
 /**
  * Move a shard from one node to another.
- * @param homePath The home path of the nodes. Usually /home/incognito
  * @param from The index of the node to copy from
  * @param to The index of the node to copy to
  * @param shards The shards to copy. Defaults to ["beacon"]
  */
 export default async function move(
-  homePath: string,
+  this: DuplicatedFilesCleaner,
   from: string | number,
   to: string | number,
   shards: (ShardsStr | Shards | ShardsNames)[] = ["beacon"]
@@ -20,8 +20,8 @@ export default async function move(
   for (const shard of normShards) {
     console.log(`Moving ${shard} from node ${from} to node ${to}.`);
 
-    const fromShardPath = join(homePath, `/node_data_${from}/mainnet/block/${shard}`);
-    const toShardPath = join(homePath, `/node_data_${to}/mainnet/block/${shard}`);
+    const fromShardPath = join(this.homePath, `/node_data_${from}/mainnet/block/${shard}`);
+    const toShardPath = join(this.homePath, `/node_data_${to}/mainnet/block/${shard}`);
 
     // remove the destination shard, if it exists
     await Deno.remove(toShardPath, { recursive: true }).catch(() => {});

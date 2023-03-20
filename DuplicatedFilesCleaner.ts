@@ -2,6 +2,7 @@ import { join } from "./deps.ts";
 import getInfo from "./getInfo.ts";
 import getFilesOfNodes from "./utils/getFilesOfNodes.ts";
 import Constants, { Instruction, ValidatorPublicKeys } from "./types/constants.type.ts";
+import move from "./move.ts";
 
 export default class DuplicatedFilesCleaner {
   homePath: string;
@@ -56,7 +57,16 @@ export default class DuplicatedFilesCleaner {
    * @return First key is the shard name, second key is the node number, and the value is an array of files.
    */
   declare getFilesOfNodes: typeof getFilesOfNodes;
+
+  /**
+   * Move a shard from one node to another.
+   * @param from The index of the node to copy from
+   * @param to The index of the node to copy to
+   * @param shards The shards to copy. Defaults to ["beacon"]
+   */
+  declare move: typeof move;
 }
 
 DuplicatedFilesCleaner.prototype.getInfo = getInfo;
 DuplicatedFilesCleaner.prototype.getFilesOfNodes = getFilesOfNodes;
+DuplicatedFilesCleaner.prototype.move = move;
