@@ -1,6 +1,7 @@
 import getFiles from "./utils/getFiles.ts";
 import { join, MultiProgressBar } from "./deps.ts";
 import normalizeShards from "./utils/normalizeShards.ts";
+import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
 import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
 
 const bars = new MultiProgressBar({
@@ -12,43 +13,28 @@ const bars = new MultiProgressBar({
 interface CopyDataOptions {
   to: string;
   from: string;
-  homePath: string;
   logProgressBar?: boolean;
-  filesToStripIfOffline?: number;
   shards?: (ShardsStr | Shards | ShardsNames)[];
 }
 
-/**
- * Copy a shard from one node to another.
- * @param homePath The home path of the nodes. Usually /home/incognito
- * @param from The index of the node to copy from
- * @param to The index of the node to copy to
- * @param shards The shards to copy. Defaults to ["beacon"]
- * @param filesToStripIfOffline The number of files to strip from the beginning of the shard if the node is offline. Defaults to 0.
- * @param logProgressBar Whether to log a progress bar. Defaults to false.
- */
-export default async function copyData({
-  to,
-  from,
-  homePath,
-  shards = ["beacon"],
-  logProgressBar = false,
-  filesToStripIfOffline = 0,
-}: CopyDataOptions) {
+export default async function copyData(
+  this: DuplicatedFilesCleaner,
+  { to, from, shards = ["beacon"], logProgressBar = false }: CopyDataOptions
+) {
   for (const shard of normalizeShards(shards)) {
     console.log(`Moving ${shard}'s files from ${from} to ${to}`);
 
-    const fromShardPath = join(homePath, `/node_data_${from}/mainnet/block/${shard}`);
-    const toShardPath = join(homePath, `/node_data_${to}/mainnet/block/${shard}`);
+    const fromShardPath = join(this.homePath, `/node_data_${from}/mainnet/block/${shard}`);
+    const toShardPath = join(this.homePath, `/node_data_${to}/mainnet/block/${shard}`);
 
     const allLdbFiles = getFiles(fromShardPath);
 
-    const ldbFiles = allLdbFiles.slice(filesToStripIfOffline >= 0 ? filesToStripIfOffline : 0);
+    const ldbFiles = allLdbFiles.slice(this.filesToStripIfOffline >= 0 ? this.filesToStripIfOffline : 0);
     const otherFiles = [
       // the files that are not ldb files
       ...[...Deno.readDirSync(fromShardPath)].filter((file) => !file.name.endsWith(".ldb")),
       // the files that were sliced from allLdbFiles
-      ...allLdbFiles.slice(0, filesToStripIfOffline >= 0 ? filesToStripIfOffline : 0),
+      ...allLdbFiles.slice(0, this.filesToStripIfOffline >= 0 ? this.filesToStripIfOffline : 0),
     ];
 
     console.log("Emptying the destination directory");

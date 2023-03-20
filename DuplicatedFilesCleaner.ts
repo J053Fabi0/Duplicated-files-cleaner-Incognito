@@ -1,17 +1,16 @@
+import move from "./move.ts";
 import { join } from "./deps.ts";
 import getInfo from "./getInfo.ts";
+import copyData from "./copyData.ts";
 import getFilesOfNodes from "./utils/getFilesOfNodes.ts";
-import Constants, { Instruction, ValidatorPublicKeys } from "./types/constants.type.ts";
-import move from "./move.ts";
+import Constants, { Instruction } from "./types/constants.type.ts";
 
 export default class DuplicatedFilesCleaner {
   homePath: string;
-  fileSystem?: string;
   storageFolder: string;
   instructions: Instruction[];
   filesToStripIfOnline: number;
   filesToStripIfOffline: number;
-  validatorPublicKeys?: ValidatorPublicKeys;
 
   // These are not part of the constructor, they are calculated at initialization.
   allNodes: Set<number>;
@@ -19,18 +18,14 @@ export default class DuplicatedFilesCleaner {
 
   constructor({
     homePath,
-    fileSystem,
     instructions,
     storageFolder,
-    validatorPublicKeys,
     filesToStripIfOnline,
     filesToStripIfOffline,
-  }: Constants) {
+  }: Omit<Constants, "fileSystem" | "validatorPublicKeys">) {
     this.homePath = homePath;
-    this.fileSystem = fileSystem;
     this.instructions = instructions;
     this.storageFolder = storageFolder;
-    this.validatorPublicKeys = validatorPublicKeys;
     this.filesToStripIfOnline = filesToStripIfOnline;
     this.filesToStripIfOffline = filesToStripIfOffline;
 
@@ -65,8 +60,18 @@ export default class DuplicatedFilesCleaner {
    * @param shards The shards to copy. Defaults to ["beacon"]
    */
   declare move: typeof move;
+
+  /**
+   * Copy a shard from one node to another.
+   * @param from The index of the node to copy from
+   * @param to The index of the node to copy to
+   * @param shards The shards to copy. Defaults to ["beacon"]
+   * @param logProgressBar Whether to log a progress bar. Defaults to false.
+   */
+  declare copyData: typeof copyData;
 }
 
 DuplicatedFilesCleaner.prototype.getInfo = getInfo;
 DuplicatedFilesCleaner.prototype.getFilesOfNodes = getFilesOfNodes;
 DuplicatedFilesCleaner.prototype.move = move;
+DuplicatedFilesCleaner.prototype.copyData = copyData;
