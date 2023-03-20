@@ -3,9 +3,9 @@ import run from "./run/run.ts";
 import copyData from "./copyData.ts";
 import constants from "./constants.ts";
 import getAllNodes from "./utils/getAllNodes.ts";
-import { df, dockerPs } from "./utils/commands.ts";
-import getFilesOfNodes from "./utils/getFilesOfNodes.ts";
-import { ShardsNames, shardsNames } from "./types/shards.type.ts";
+import { df } from "./utils/commands.ts";
+import { ShardsNames } from "./types/shards.type.ts";
+import getInfo from "./getInfo.ts";
 
 const { fileSystem } = constants;
 
@@ -27,24 +27,15 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
 }
 
 if (Deno.args[0] === "info") {
-  const dockerStatus = await dockerPs();
   const nodes = Deno.args.slice(1).length ? Deno.args.slice(1) : getAllNodes();
-  const filesOfNodes = await getFilesOfNodes({ allShards: true, strip: false });
+  const info = await getInfo(nodes);
 
   for (const node of nodes) {
     console.group(`\nNode ${node}:`);
-    const info = shardsNames.reduce(
-      (obj, shard) => {
-        if (filesOfNodes[shard][node].length >= 30) obj[shard] = filesOfNodes[shard][node].length;
-        return obj;
-      },
-      {
-        docker: dockerStatus[node],
-      } as Record<string, number | string>
-    );
-    console.table(info);
+    console.table(info[node]);
     console.groupEnd();
   }
+
   Deno.exit();
 }
 
