@@ -1,15 +1,15 @@
 import { join } from "./deps.ts";
-import constants from "./constants.ts";
 import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
 
-const { homePath } = constants;
-
 /**
+ * Move a shard from one node to another.
+ * @param homePath The home path of the nodes. Usually /home/incognito
  * @param from The index of the node to copy from
  * @param to The index of the node to copy to
  * @param shards The shards to copy. Defaults to ["beacon"]
  */
 export default async function move(
+  homePath: string,
   from: string | number,
   to: string | number,
   shards: (ShardsStr | Shards | ShardsNames)[] = ["beacon"]

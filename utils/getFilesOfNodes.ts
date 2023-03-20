@@ -1,5 +1,4 @@
 import { join } from "../deps.ts";
-import getAllNodes from "./getAllNodes.ts";
 import { dockerPs } from "../utils/commands.ts";
 import { shardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";

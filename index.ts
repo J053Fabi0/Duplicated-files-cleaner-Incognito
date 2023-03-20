@@ -40,7 +40,7 @@ if (Deno.args[0] === "info") {
 }
 
 if (Deno.args[0] === "move") {
-  await move(Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
+  await move(homePath, Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
   Deno.exit();
 }
 
