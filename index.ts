@@ -1,13 +1,13 @@
 import move from "./move.ts";
 import run from "./run/run.ts";
+import getInfo from "./getInfo.ts";
 import copyData from "./copyData.ts";
 import constants from "./constants.ts";
-import getAllNodes from "./utils/getAllNodes.ts";
 import { df } from "./utils/commands.ts";
+import getAllNodes from "./utils/getAllNodes.ts";
 import { ShardsNames } from "./types/shards.type.ts";
-import getInfo from "./getInfo.ts";
 
-const { fileSystem } = constants;
+const { fileSystem, instructions, homePath } = constants;
 
 // if --help or -h is passed, show the help message
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
@@ -27,8 +27,8 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
 }
 
 if (Deno.args[0] === "info") {
-  const nodes = Deno.args.slice(1).length ? Deno.args.slice(1) : getAllNodes();
-  const info = await getInfo(nodes);
+  const nodes = Deno.args.slice(1).length ? Deno.args.slice(1) : getAllNodes(instructions);
+  const info = await getInfo(homePath, nodes);
 
   for (const node of nodes) {
     console.group(`\nNode ${node}:`);

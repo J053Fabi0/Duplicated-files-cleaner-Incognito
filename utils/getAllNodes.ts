@@ -1,19 +1,11 @@
-import constants from "../constants.ts";
-
-const { instructions } = constants;
-
-let allNodes: Set<number> | undefined = undefined;
+import { Instruction } from "../types/constants.type.ts";
 
 /**
  * @returns A set of all nodes in the instructions.
  */
-export default function getAllNodes() {
-  if (allNodes) return allNodes;
-
-  allNodes = instructions.reduce((set, i) => {
+export default function getAllNodes(instructions: Instruction[]) {
+  return instructions.reduce((set, i) => {
     for (const node of i.nodes) set.add(node);
     return set;
   }, new Set<number>());
-
-  return allNodes;
 }

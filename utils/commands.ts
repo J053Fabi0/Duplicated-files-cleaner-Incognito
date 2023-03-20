@@ -1,5 +1,4 @@
 import binaryWrapper from "./binaryWrapper.ts";
-import getAllNodes from "./getAllNodes.ts";
 import repeatUntilNoError from "./repeatUntilNoError.ts";
 
 export const df = binaryWrapper("df");
@@ -15,7 +14,7 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
 
 type DockersStatus = Record<string, "ONLINE" | "OFFLINE">;
 let dockersStatus: DockersStatus | undefined = undefined;
-export const dockerPs = () =>
+export const dockerPs = (nodes: (number | string)[] = []) =>
   _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
     // Return the cached value if it exists.
     // Otherwise create it.
@@ -31,11 +30,8 @@ export const dockerPs = () =>
           return obj;
         }, {} as DockersStatus);
 
-      // Get all the nodes present in instructions
-      const allNodes = getAllNodes();
-
       dockersStatus = {};
-      for (const dockerIndex of allNodes) dockersStatus[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
+      for (const dockerIndex of nodes) dockersStatus[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
     }
 
     return dockersStatus;
