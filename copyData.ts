@@ -1,8 +1,7 @@
-import { join, MultiProgressBar } from "./deps.ts";
-import constants from "./constants.ts";
 import getFiles from "./utils/getFiles.ts";
-
-const { homePath, filesToStripIfOffline } = constants;
+import { join, MultiProgressBar } from "./deps.ts";
+import normalizeShards from "./utils/normalizeShards.ts";
+import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
 
 const bars = new MultiProgressBar({
   complete: "#",
@@ -10,8 +9,35 @@ const bars = new MultiProgressBar({
   display: "[:bar] :text :percent :completed/:total :time",
 });
 
-export default async function copyData(from: string, to: string, shard: string) {
-  try {
+interface CopyDataOptions {
+  to: string;
+  from: string;
+  homePath: string;
+  logProgressBar?: boolean;
+  filesToStripIfOffline?: number;
+  shards?: (ShardsStr | Shards | ShardsNames)[];
+}
+
+/**
+ * Copy a shard from one node to another.
+ * @param homePath The home path of the nodes. Usually /home/incognito
+ * @param from The index of the node to copy from
+ * @param to The index of the node to copy to
+ * @param shards The shards to copy. Defaults to ["beacon"]
+ * @param filesToStripIfOffline The number of files to strip from the beginning of the shard if the node is offline. Defaults to 0.
+ * @param logProgressBar Whether to log a progress bar. Defaults to false.
+ */
+export default async function copyData({
+  to,
+  from,
+  homePath,
+  shards = ["beacon"],
+  logProgressBar = false,
+  filesToStripIfOffline = 0,
+}: CopyDataOptions) {
+  for (const shard of normalizeShards(shards)) {
+    console.log(`Moving ${shard}'s files from ${from} to ${to}`);
+
     const fromShardPath = join(homePath, `/node_data_${from}/mainnet/block/${shard}`);
     const toShardPath = join(homePath, `/node_data_${to}/mainnet/block/${shard}`);
 
@@ -36,25 +62,34 @@ export default async function copyData(from: string, to: string, shard: string) 
     );
 
     let i = 0;
-    (async () => {
-      while (i !== Infinity) {
-        bars.render([{ completed: i, total: otherFiles.length, text: "\n" }]);
-        await new Promise((resolve) => setTimeout(resolve, 150));
-      }
-    })();
+    if (logProgressBar)
+      (async () => {
+        while (i !== Infinity) {
+          bars.render([{ completed: i, total: otherFiles.length, text: "\n" }]);
+          await new Promise((resolve) => setTimeout(resolve, 150));
+        }
+      })();
 
     console.log("Copying the rest of the files with copy, including directories\n");
     await Promise.all(
       otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => void i++))
     );
+
     i = Infinity;
-    bars.render([{ completed: otherFiles.length, total: otherFiles.length, text: "\n" }]);
-  } catch (e) {
-    console.error(e);
+    if (logProgressBar) {
+      bars.render([{ completed: otherFiles.length, total: otherFiles.length, text: "\n" }]);
+      bars.end();
+    }
   }
 }
 
-async function copyFileOrDir(fromPath: string, toPath: string, file: Deno.DirEntry) {
+/**
+ * Copy a file or directory recursively
+ * @param fromPath The path to copy from
+ * @param toPath The path to copy to
+ * @param file The file or directory to copy
+ */
+export async function copyFileOrDir(fromPath: string, toPath: string, file: Deno.DirEntry) {
   const fromFilePath = join(fromPath, file.name);
   const toFilePath = join(toPath, file.name);
 

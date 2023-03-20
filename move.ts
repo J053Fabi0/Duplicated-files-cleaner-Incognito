@@ -1,5 +1,6 @@
 import { join } from "./deps.ts";
 import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
+import normalizeShards from "./utils/normalizeShards.ts";
 
 /**
  * Move a shard from one node to another.
@@ -14,14 +15,7 @@ export default async function move(
   to: string | number,
   shards: (ShardsStr | Shards | ShardsNames)[] = ["beacon"]
 ) {
-  // normalize shards
-  const normShards = shards.map((s) =>
-    /^[0-7]$/.test(`${s}`) ? `shard${s}` : s.toString().toLowerCase()
-  ) as ShardsNames[];
-  if (normShards.length === 0) normShards.push("beacon");
-
-  for (const shard of normShards)
-    if (/^shard[0-7]|beacon$/.test(shard) === false) throw new Error(`Invalid shard: ${shard}`);
+  const normShards = normalizeShards(shards);
 
   for (const shard of normShards) {
     console.log(`Moving ${shard} from node ${from} to node ${to}.`);

@@ -15,7 +15,7 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
   console.log("    deno task run");
 
   console.log("\nUsage to copy shards:");
-  console.log("    deno task run [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
+  console.log("    deno task run copy [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
 
   console.log("\nUsage to get nodes' shards info:");
   console.log("    deno task run info [...nodeIndexes=all]");
@@ -26,44 +26,40 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
   Deno.exit();
 }
 
-if (Deno.args[0] === "info") {
-  const nodes = Deno.args.slice(1).length ? Deno.args.slice(1) : getAllNodes(instructions);
-  const info = await getInfo(homePath, nodes);
-
-  for (const node of nodes) {
-    console.group(`\nNode ${node}:`);
-    console.table(info[node]);
-    console.groupEnd();
-  }
-
-  Deno.exit();
-}
-
-if (Deno.args[0] === "move") {
-  await move(homePath, Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
-  Deno.exit();
-}
-
-const [from = "", to = "", ...shards] = Deno.args;
-if (shards.length === 0) shards.push("beacon");
-
 const firstData = fileSystem ? await df(["-h", fileSystem, "--output=used,avail,pcent"]) : "";
 
-if (from && to) {
-  for (const shard of shards) {
-    if (/^(beacon|shard[0-7]|[0-7])$/i.test(shard) === false) {
-      console.log(`Invalid shard: ${shard}`);
-      continue;
+switch (Deno.args[0]) {
+  case "info": {
+    const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : getAllNodes(instructions);
+    const info = await getInfo(homePath, nodes);
+
+    for (const node of nodes) {
+      console.group(`\nNode ${node}:`);
+      console.table(info[node]);
+      console.groupEnd();
     }
 
-    const normalizedShard = shard.length === 1 ? `shard${shard}` : shard.toLocaleLowerCase();
-    console.log(`Moving ${normalizedShard} files from ${from} to ${to}`);
-    await copyData(from, to, normalizedShard);
-    console.log();
+    break;
   }
+
+  case "move": {
+    await move(homePath, Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
+    break;
+  }
+
+  case "copy": {
+    const [, from = "", to = "", ...shards] = Deno.args;
+
+    if (shards.length === 0) shards.push("beacon");
+
+    if (from && to) await copyData({ from, to, shards: shards as ShardsNames[], homePath });
+    else console.error("Missing from and/or to node indexes.");
+    break;
+  }
+
+  default:
+    await run();
 }
-//
-else await run();
 
 if (fileSystem)
   console.log("\n", firstData, "\n", (await df(["-h", fileSystem, "--output=used,avail,pcent"])).slice(1));
