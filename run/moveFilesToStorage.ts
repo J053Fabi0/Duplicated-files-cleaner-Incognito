@@ -1,13 +1,40 @@
 import { join } from "../deps.ts";
-import constants from "../constants.ts";
+import { Instruction } from "../types/constants.type.ts";
 import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
-import getStorageFiles, { homeStoragePath } from "../utils/getStorageFiles.ts";
+import getStorageFiles from "../utils/getStorageFiles.ts";
 
-const { homePath, instructions } = constants;
+interface MoveFilesToStorageOptions {
+  homePath?: string;
+  ignoreCache?: boolean;
+  storageFolder?: string;
+  instructions: Instruction[];
+  filesToStripIfOnline?: number;
+  filesToStripIfOffline?: number;
+}
 
-export default async function moveFilesToStorage() {
-  const storageFiles = getStorageFiles();
-  const filesOfNodes = await getFilesOfNodes();
+export default async function moveFilesToStorage({
+  instructions,
+  ignoreCache = false,
+  storageFolder = "storage",
+  filesToStripIfOffline = 0,
+  filesToStripIfOnline = -1,
+  homePath = "/home/incognito",
+}: MoveFilesToStorageOptions) {
+  const storageFiles = getStorageFiles({
+    homePath,
+    ignoreCache,
+    storageFolder,
+    shards: instructions.map((i) => i.shardName),
+  });
+  const filesOfNodes = await getFilesOfNodes({
+    instructions,
+    homePath,
+    ignoreCache,
+    strip: true,
+    filesToStripIfOffline,
+    filesToStripIfOnline,
+  });
+  const homeStoragePath = join(homePath, storageFolder);
 
   for (const { shardName, nodes } of instructions) {
     const shardStorageFiles = storageFiles[shardName];

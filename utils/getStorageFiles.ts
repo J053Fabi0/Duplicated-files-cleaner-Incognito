@@ -1,20 +1,39 @@
 import { join } from "../deps.ts";
-import constants from "../constants.ts";
+import { ShardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
-
-const { homePath, storageFolder, instructions } = constants;
 
 export type StorageFile = LDBFile & { used: number };
 export type StorageFiles = Record<string, StorageFile[]>;
-export const homeStoragePath = join(homePath, storageFolder);
 
 let cached = false;
 const storageFiles: StorageFiles = {};
 
-export default function getStorageFiles(ignoreCache = false): StorageFiles {
+interface GetStorageFilesOptions {
+  homePath?: string;
+  ignoreCache?: boolean;
+  storageFolder?: string;
+  shards: ShardsNames[];
+}
+
+/**
+ * Get the files in the storage directory.
+ * @param shards The shards to get the files from.
+ * @param homePath The home path of the nodes. Usually /home/incognito
+ * @param storageFolder The name of the storage folder. Usually storage
+ * @param ignoreCache Ignore the cache and get the files again. Default: false
+ * @returns The files in the storage directory.
+ */
+export default function getStorageFiles({
+  shards,
+  ignoreCache = false,
+  storageFolder = "storage",
+  homePath = "/home/incognito",
+}: GetStorageFilesOptions): StorageFiles {
+  const homeStoragePath = join(homePath, storageFolder);
+
   if (cached && ignoreCache === false) return storageFiles;
 
-  for (const { shardName } of instructions) {
+  for (const shardName of shards) {
     const shardStoragePath = join(homeStoragePath, shardName);
 
     // If it doesn't exist, create it.
