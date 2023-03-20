@@ -1,18 +1,28 @@
+import move from "./move.ts";
 import run from "./run/run.ts";
 import copyData from "./copyData.ts";
 import constants from "./constants.ts";
+import getAllNodes from "./utils/getAllNodes.ts";
 import { df, dockerPs } from "./utils/commands.ts";
 import getFilesOfNodes from "./utils/getFilesOfNodes.ts";
-import { shardsNames } from "./types/shards.type.ts";
-import getAllNodes from "./utils/getAllNodes.ts";
+import { ShardsNames, shardsNames } from "./types/shards.type.ts";
 
 const { fileSystem } = constants;
 
 // if --help or -h is passed, show the help message
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
-  console.log("Usage: deno task run");
-  console.log("Usage to copy files: deno task run [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
-  console.log("Usage to get nodes' info: deno task run info [...nodeIndexes=all]");
+  console.log("\nUsage:");
+  console.log("    deno task run");
+
+  console.log("\nUsage to copy shards:");
+  console.log("    deno task run [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
+
+  console.log("\nUsage to get nodes' shards info:");
+  console.log("    deno task run info [...nodeIndexes=all]");
+
+  console.log("\nUsage to move shards:");
+  console.log("    deno task run move [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
+
   Deno.exit();
 }
 
@@ -35,6 +45,11 @@ if (Deno.args[0] === "info") {
     console.table(info);
     console.groupEnd();
   }
+  Deno.exit();
+}
+
+if (Deno.args[0] === "move") {
+  await move(Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
   Deno.exit();
 }
 
