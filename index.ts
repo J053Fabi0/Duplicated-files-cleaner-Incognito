@@ -29,7 +29,7 @@ const duplicatedFilesCleaner = new DuplicatedFilesCleaner(constants);
 
 switch (Deno.args[0]) {
   case "info": {
-    const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : duplicatedFilesCleaner.allNodes;
+    const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : duplicatedFilesCleaner.usedNodes;
     const info = await duplicatedFilesCleaner.getInfo(nodes);
 
     for (const node of nodes) {
@@ -57,7 +57,7 @@ switch (Deno.args[0]) {
   }
 
   default:
-    await run();
+    await duplicatedFilesCleaner.run();
 }
 
 if (fileSystem)

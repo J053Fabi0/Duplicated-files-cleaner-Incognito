@@ -9,20 +9,13 @@ import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 let cached = false;
 const filesOfNodes: Record<string, Record<string, LDBFile[]>> = {};
 
-export interface GetFilesOfNodesOptions {
-  strip?: boolean;
-  allShards?: boolean;
-  ignoreCache?: boolean;
-  nodes?: (string | number)[] | Set<string | number>;
-}
-
 export default async function getFilesOfNodes(
   this: DuplicatedFilesCleaner,
-  { strip = true, allShards = false, ignoreCache = false, nodes = this.allNodes }: GetFilesOfNodesOptions
+  { strip = true, allShards = false, useCache = false, nodes = this.usedNodes } = {}
 ) {
-  if (cached && ignoreCache === false) return filesOfNodes;
+  if (cached && useCache) return filesOfNodes;
 
-  const dockerStatuses = await dockerPs();
+  const dockerStatuses = await dockerPs(this.usedNodes, useCache);
 
   const newInstructions = allShards
     ? shardsNames.map((shardName) => ({ shardName, nodes: nodes }))

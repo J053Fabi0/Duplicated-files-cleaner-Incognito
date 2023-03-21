@@ -1,32 +1,31 @@
 import { join } from "../deps.ts";
-import constants from "../constants.ts";
 import { dockerPs } from "../utils/commands.ts";
-import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
-import getStorageFiles, { homeStoragePath } from "../utils/getStorageFiles.ts";
+import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
-const { homePath, instructions, filesToStripIfOnline } = constants;
+export default async function substituteFiles(
+  this: DuplicatedFilesCleaner,
+  { useCachedStorageFiles = false, useCachedFilesOfNodes = false, useCachedDockersStatuses = false } = {}
+) {
+  const storageFiles = this.getStorageFiles({ useCache: useCachedStorageFiles });
+  const filesOfNodes = await this.getFilesOfNodes({ useCache: useCachedFilesOfNodes });
+  const dockerStatuses = await dockerPs(this.usedNodes, useCachedDockersStatuses);
 
-export default async function substituteFiles() {
-  const storageFiles = getStorageFiles();
-  const dockerStatuses = await dockerPs();
-  const filesOfNodes = await getFilesOfNodes();
-
-  for (const { shardName, nodes } of instructions) {
+  for (const { shardName, nodes } of this.instructions) {
     console.group(`Substituting files in ${shardName}`);
 
-    const shardStoragePath = join(homeStoragePath, shardName);
+    const shardStoragePath = join(this.homeStoragePath, shardName);
 
     for (const node of nodes) {
       console.group("Prossesing node", node);
 
       const shardStorageFiles = storageFiles[shardName];
       const defaultStorageFile = shardStorageFiles[0];
-      const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
+      const shardPath = join(this.homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
       let filesProcessed = 0;
 
       // if filesToStripIfOnline is negative, only deal with offline nodes
-      if (filesToStripIfOnline < 0 && dockerStatuses[node] === "ONLINE")
+      if (this.filesToStripIfOnline < 0 && dockerStatuses[node] === "ONLINE")
         console.log("Skipping node", node, "because it is online and filesToStripIfOffline is negative.");
       else
         await Promise.all(

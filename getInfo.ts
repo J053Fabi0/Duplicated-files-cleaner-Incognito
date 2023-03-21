@@ -6,7 +6,7 @@ export type Info = Record<ShardsNames, number> & { docker: "ONLINE" | "OFFLINE" 
 
 export default async function getInfo(
   this: DuplicatedFilesCleaner,
-  nodes: (string | number)[] | Set<string | number> = this.allNodes
+  nodes: (string | number)[] | Set<string | number> = this.usedNodes
 ) {
   const dockerStatus = await dockerPs(nodes instanceof Set ? [...nodes] : nodes);
 

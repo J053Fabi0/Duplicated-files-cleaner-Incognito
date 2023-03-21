@@ -1,40 +1,21 @@
 import { join } from "../deps.ts";
-import { ShardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
+import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
 export type StorageFile = LDBFile & { used: number };
 export type StorageFiles = Record<string, StorageFile[]>;
 
 let cached = false;
-const storageFiles: StorageFiles = {};
+const storageFilesCache: StorageFiles = {};
 
-interface GetStorageFilesOptions {
-  homePath?: string;
-  ignoreCache?: boolean;
-  storageFolder?: string;
-  shards: ShardsNames[];
-}
-
-/**
- * Get the files in the storage directory.
- * @param shards The shards to get the files from.
- * @param homePath The home path of the nodes. Usually /home/incognito
- * @param storageFolder The name of the storage folder. Usually storage
- * @param ignoreCache Ignore the cache and get the files again. Default: false
- * @returns The files in the storage directory.
- */
-export default function getStorageFiles({
-  shards,
-  ignoreCache = false,
-  storageFolder = "storage",
-  homePath = "/home/incognito",
-}: GetStorageFilesOptions): StorageFiles {
-  const homeStoragePath = join(homePath, storageFolder);
-
-  if (cached && ignoreCache === false) return storageFiles;
+export default function getStorageFiles(
+  this: DuplicatedFilesCleaner,
+  { shards = this.usedShards, useCache = false } = {}
+): StorageFiles {
+  if (cached && useCache) return storageFilesCache;
 
   for (const shardName of shards) {
-    const shardStoragePath = join(homeStoragePath, shardName);
+    const shardStoragePath = join(this.homeStoragePath, shardName);
 
     // If it doesn't exist, create it.
     try {
@@ -48,9 +29,9 @@ export default function getStorageFiles({
       Deno.mkdirSync(shardStoragePath, { recursive: true });
     }
 
-    storageFiles[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: 0 }));
+    storageFilesCache[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: 0 }));
   }
 
   cached = true;
-  return storageFiles;
+  return storageFilesCache;
 }

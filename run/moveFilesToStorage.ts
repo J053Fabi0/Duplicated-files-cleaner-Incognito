@@ -1,44 +1,16 @@
 import { join } from "../deps.ts";
-import { Instruction } from "../types/constants.type.ts";
-import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
-import getStorageFiles from "../utils/getStorageFiles.ts";
+import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
-interface MoveFilesToStorageOptions {
-  homePath?: string;
-  ignoreCache?: boolean;
-  storageFolder?: string;
-  instructions: Instruction[];
-  filesToStripIfOnline?: number;
-  filesToStripIfOffline?: number;
-}
+export default async function moveFilesToStorage(
+  this: DuplicatedFilesCleaner,
+  { useCachedStorageFiles = false, useCachedFilesOfNodes = false } = {}
+) {
+  const storageFiles = this.getStorageFiles({ useCache: useCachedStorageFiles });
+  const filesOfNodes = await this.getFilesOfNodes({ useCache: useCachedFilesOfNodes, strip: true });
 
-export default async function moveFilesToStorage({
-  instructions,
-  ignoreCache = false,
-  storageFolder = "storage",
-  filesToStripIfOffline = 0,
-  filesToStripIfOnline = -1,
-  homePath = "/home/incognito",
-}: MoveFilesToStorageOptions) {
-  const storageFiles = getStorageFiles({
-    homePath,
-    ignoreCache,
-    storageFolder,
-    shards: instructions.map((i) => i.shardName),
-  });
-  const filesOfNodes = await getFilesOfNodes({
-    instructions,
-    homePath,
-    ignoreCache,
-    strip: true,
-    filesToStripIfOffline,
-    filesToStripIfOnline,
-  });
-  const homeStoragePath = join(homePath, storageFolder);
-
-  for (const { shardName, nodes } of instructions) {
+  for (const { shardName, nodes } of this.instructions) {
     const shardStorageFiles = storageFiles[shardName];
-    const shardStoragePath = join(homeStoragePath, shardName);
+    const shardStoragePath = join(this.homeStoragePath, shardName);
 
     console.group(shardName);
     const numberOfFiles = shardStorageFiles.length;
@@ -47,7 +19,7 @@ export default async function moveFilesToStorage({
     for (const node of nodes) {
       console.log(`Prossesing node ${node}`);
 
-      const shardPath = join(homePath, `/node_data_${node}/mainnet/block/${shardName}`);
+      const shardPath = join(this.homePath, `/node_data_${node}/mainnet/block/${shardName}`);
 
       await Promise.all(
         filesOfNodes[shardName][node].map(async (file) => {

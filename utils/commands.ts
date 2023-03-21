@@ -13,12 +13,15 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
   );
 
 type DockersStatus = Record<string, "ONLINE" | "OFFLINE">;
-let dockersStatus: DockersStatus | undefined = undefined;
-export const dockerPs = (nodes: (number | string)[] = []) =>
+let dockersStatusCache: DockersStatus | undefined = undefined;
+/**
+ * @param nodes The nodes to get the info from. If not provided, it will get the info from all nodes.
+ * @param useCache Use cache if exists. Default is false.
+ * @returns Key is the node index and value is the docker status ("ONLINE" or "OFFLINE").
+ */
+export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [], useCache = false) =>
   _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
-    // Return the cached value if it exists.
-    // Otherwise create it.
-    if (!dockersStatus) {
+    if (!dockersStatusCache || !useCache) {
       const tempDockersStatus = v
         // Get rid of a last "\n" that always has nothing.
         .slice(0, -1)
@@ -30,9 +33,11 @@ export const dockerPs = (nodes: (number | string)[] = []) =>
           return obj;
         }, {} as DockersStatus);
 
-      dockersStatus = {};
-      for (const dockerIndex of nodes) dockersStatus[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
+      dockersStatusCache = {};
+      const numberOfNodes = nodes instanceof Set ? nodes.size : nodes.length;
+      for (const dockerIndex of numberOfNodes === 0 ? Object.keys(tempDockersStatus) : nodes)
+        dockersStatusCache[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
     }
 
-    return dockersStatus;
+    return dockersStatusCache;
   });

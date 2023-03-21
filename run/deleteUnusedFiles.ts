@@ -1,14 +1,11 @@
 import { join } from "../deps.ts";
-import constants from "../constants.ts";
-import getStorageFiles, { homeStoragePath } from "../utils/getStorageFiles.ts";
+import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
-const { instructions } = constants;
+export default async function deleteUnusedFiles(this: DuplicatedFilesCleaner, useCachedStorageFiles = false) {
+  const storageFiles = this.getStorageFiles({ useCache: useCachedStorageFiles });
 
-export default async function deleteUnusedFiles() {
-  const storageFiles = getStorageFiles();
-
-  for (const { shardName } of instructions) {
-    const shardStoragePath = join(homeStoragePath, shardName);
+  for (const { shardName } of this.instructions) {
+    const shardStoragePath = join(this.homeStoragePath, shardName);
 
     console.group(`Deleting unused files in ${shardStoragePath}`);
 
