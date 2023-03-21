@@ -2,7 +2,7 @@ import getFiles from "../utils/getFiles.ts";
 import { join, MultiProgressBar } from "../deps.ts";
 import normalizeShards from "../utils/normalizeShards.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
-import Shards, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
+import ShardsNumbers, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
 
 const bars = new MultiProgressBar({
   complete: "#",
@@ -14,7 +14,7 @@ interface CopyDataOptions {
   to: string;
   from: string;
   logProgressBar?: boolean;
-  shards?: (ShardsStr | Shards | ShardsNames)[];
+  shards?: (ShardsStr | ShardsNumbers | ShardsNames)[];
 }
 
 export default async function copyData(

@@ -7,7 +7,7 @@ import { readableStreamFromReader } from "streams";
  * @param parser The parser to parse the output of the command. Defaults to no parsing.
  * @returns The parsed output of the command.
  */
-export const spawnPromise = async <returnType>(
+const spawnPromise = async <returnType>(
   command: string,
   args: string[] | number[] | string,
   parser: (o: string) => returnType = (o: string) => o as unknown as returnType

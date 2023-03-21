@@ -1,7 +1,7 @@
 import { join } from "../deps.ts";
 import normalizeShards from "../utils/normalizeShards.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
-import Shards, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
+import ShardsNumbers, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
 
 /**
  * Move a shard from one node to another.
@@ -13,7 +13,7 @@ export default async function move(
   this: DuplicatedFilesCleaner,
   from: string | number,
   to: string | number,
-  shards: (ShardsStr | Shards | ShardsNames)[] = ["beacon"]
+  shards: (ShardsStr | ShardsNumbers | ShardsNames)[] = ["beacon"]
 ) {
   const normShards = normalizeShards(shards);
 

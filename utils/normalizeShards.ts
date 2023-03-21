@@ -1,4 +1,4 @@
-import Shards, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
+import ShardsNumbers, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
 
 const shardNumberRegex = /^[0-7]$/;
 const shardsFullNameRegex = /^shard[0-7]|beacon$/;
@@ -8,7 +8,7 @@ const shardsFullNameRegex = /^shard[0-7]|beacon$/;
  * @param shards The shards to normalize.
  * @returns The normalized shards.
  */
-export default function normalizeShards(shards: (ShardsStr | Shards | ShardsNames)[]): ShardsNames[] {
+export default function normalizeShards(shards: (ShardsStr | ShardsNumbers | ShardsNames)[]): ShardsNames[] {
   const normShards = shards.map((s) =>
     shardNumberRegex.test(typeof s === "number" ? `${s}` : s) ? `shard${s}` : s.toString().toLowerCase()
   ) as ShardsNames[];
