@@ -1,5 +1,10 @@
 export type LDBFile = Deno.DirEntry & { number: number };
 
+/**
+ * Get all the .ldb files from a folder.
+ * @param path The path to the folder.
+ * @returns The .ldb files.
+ */
 export default function getFiles(path: string) {
   const files = [...readOrCreateDirSync(path)]
     // only get the .ldb files

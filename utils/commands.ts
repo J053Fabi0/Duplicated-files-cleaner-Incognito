@@ -4,6 +4,13 @@ import repeatUntilNoError from "./repeatUntilNoError.ts";
 export const df = binaryWrapper("df");
 
 const _docker = binaryWrapper("docker");
+/**
+ * Start or stop docker containers.
+ * @param name The name or names of the containers.
+ * @param action The action to perform on the containers.
+ * @param maxRetries The maximum number of retries to perform the action if it fails. Default is 5.
+ * @returns The output of the command.
+ */
 export const docker = (name: string | string[], action: "start" | "stop", maxRetries = 5) =>
   repeatUntilNoError(
     () => _docker(["container", action, ...(typeof name === "string" ? [name] : name)], (v) => v.slice(0, -1)),
