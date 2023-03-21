@@ -1,7 +1,7 @@
-import { join } from "./deps.ts";
-import normalizeShards from "./utils/normalizeShards.ts";
+import { join } from "../deps.ts";
+import normalizeShards from "../utils/normalizeShards.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
-import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
+import Shards, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
 
 /**
  * Move a shard from one node to another.

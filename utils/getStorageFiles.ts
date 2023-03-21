@@ -1,6 +1,6 @@
 import { join } from "../deps.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
-import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
+import DuplicatedFilesCleaner from "../src/DuplicatedFilesCleaner.ts";
 
 export type StorageFile = LDBFile & { used: number };
 export type StorageFiles = Record<string, StorageFile[]>;

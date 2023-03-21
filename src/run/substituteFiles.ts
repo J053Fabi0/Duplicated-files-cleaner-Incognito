@@ -1,5 +1,5 @@
-import { join } from "../deps.ts";
-import { dockerPs } from "../utils/commands.ts";
+import { join } from "../../deps.ts";
+import { dockerPs } from "../../utils/commands.ts";
 import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
 export default async function substituteFiles(

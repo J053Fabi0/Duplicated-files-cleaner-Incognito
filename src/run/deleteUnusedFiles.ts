@@ -1,4 +1,4 @@
-import { join } from "../deps.ts";
+import { join } from "../../deps.ts";
 import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
 export default async function deleteUnusedFiles(this: DuplicatedFilesCleaner, useCachedStorageFiles = false) {

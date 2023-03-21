@@ -2,7 +2,7 @@ import { join } from "../deps.ts";
 import { dockerPs } from "../utils/commands.ts";
 import { shardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
-import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
+import DuplicatedFilesCleaner from "../src/DuplicatedFilesCleaner.ts";
 
 // const { instructions, homePath, filesToStripIfOnline, filesToStripIfOffline } = constants;
 

@@ -1,15 +1,15 @@
 import move from "./move.ts";
-import { join } from "./deps.ts";
+import run from "./run/run.ts";
+import { join } from "../deps.ts";
 import getInfo from "./getInfo.ts";
 import copyData from "./copyData.ts";
-import getFilesOfNodes from "./utils/getFilesOfNodes.ts";
-import Constants, { Instruction } from "./types/constants.type.ts";
-import run from "./run/run.ts";
-import moveFilesToStorage from "./run/moveFilesToStorage.ts";
-import getStorageFiles from "./utils/getStorageFiles.ts";
-import { ShardsNames } from "./types/shards.type.ts";
+import { ShardsNames } from "../types/shards.type.ts";
 import substituteFiles from "./run/substituteFiles.ts";
+import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
+import getStorageFiles from "../utils/getStorageFiles.ts";
 import deleteUnusedFiles from "./run/deleteUnusedFiles.ts";
+import moveFilesToStorage from "./run/moveFilesToStorage.ts";
+import Constants, { Instruction } from "../types/constants.type.ts";
 
 export default class DuplicatedFilesCleaner {
   homePath: string;

@@ -1,7 +1,7 @@
 import constants from "./constants.ts";
 import { df } from "./utils/commands.ts";
 import { ShardsNames } from "./types/shards.type.ts";
-import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
+import DuplicatedFilesCleaner from "./src/DuplicatedFilesCleaner.ts";
 
 const { fileSystem } = constants;
 

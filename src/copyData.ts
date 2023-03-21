@@ -1,8 +1,8 @@
-import getFiles from "./utils/getFiles.ts";
-import { join, MultiProgressBar } from "./deps.ts";
-import normalizeShards from "./utils/normalizeShards.ts";
+import getFiles from "../utils/getFiles.ts";
+import { join, MultiProgressBar } from "../deps.ts";
+import normalizeShards from "../utils/normalizeShards.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
-import Shards, { ShardsNames, ShardsStr } from "./types/shards.type.ts";
+import Shards, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
 
 const bars = new MultiProgressBar({
   complete: "#",
