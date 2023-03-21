@@ -4,16 +4,16 @@ import DuplicatedFilesCleaner from "./src/DuplicatedFilesCleaner.ts";
 
 // if --help or -h is passed, show the help message
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
-  console.log("Usage to remove duplicated files:");
+  console.log("Remove duplicated files:");
   console.log("    deno task run");
 
-  console.log("\nUsage to copy shards:");
+  console.log("\nCopy shards:");
   console.log("    deno task run copy [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
 
-  console.log("\nUsage to get nodes' shards info:");
+  console.log("\nGet nodes' shards info:");
   console.log("    deno task run info [...nodeIndexes=all]");
 
-  console.log("\nUsage to move shards:");
+  console.log("\nMove shards:");
   console.log("    deno task run move [fromNodeIndex] [toNodeIndex] [...shards=[beacon]]");
 
   Deno.exit();

@@ -3,8 +3,10 @@ import Constants from "./types/constants.type.ts";
 const constants: Constants = {
   homePath: "/home/incognito",
   storageFolder: "storage",
-  // fileSystem: "/dev/sda3", // for the server
-  fileSystem: "/dev/nvme0n1p2", // for the laptop
+
+  // Setup this if you want to use the df command to get the storage info before and after the cleaning.
+  // Use lsblk to get the file system name.
+  // fileSystem: "/dev/sdaX",
 
   // When a node is active it creates and removes many files all the time, but only the newer ones.
   // These are the number of newer files that will be ignored when creating the hard links.
