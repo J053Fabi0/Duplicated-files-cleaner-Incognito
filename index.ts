@@ -1,4 +1,3 @@
-import run from "./run/run.ts";
 import constants from "./constants.ts";
 import { df } from "./utils/commands.ts";
 import { ShardsNames } from "./types/shards.type.ts";

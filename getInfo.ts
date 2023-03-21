@@ -11,8 +11,8 @@ export default async function getInfo(
   const dockerStatus = await dockerPs(nodes instanceof Set ? [...nodes] : nodes);
 
   const filesOfNodes = await this.getFilesOfNodes({
+    nodes,
     strip: false,
-    nodes: nodes,
     allShards: true,
   });
 

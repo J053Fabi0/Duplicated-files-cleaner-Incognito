@@ -11,7 +11,12 @@ const filesOfNodes: Record<string, Record<string, LDBFile[]>> = {};
 
 export default async function getFilesOfNodes(
   this: DuplicatedFilesCleaner,
-  { strip = true, allShards = false, useCache = false, nodes = this.usedNodes } = {}
+  {
+    strip = true,
+    allShards = false,
+    useCache = false,
+    nodes = this.usedNodes as Set<number | string> | (number | string)[],
+  } = {}
 ) {
   if (cached && useCache) return filesOfNodes;
 
