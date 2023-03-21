@@ -1,9 +1,6 @@
-import constants from "./constants.ts";
 import { df } from "./utils/commands.ts";
 import { ShardsNames } from "./types/shards.type.ts";
 import DuplicatedFilesCleaner from "./src/DuplicatedFilesCleaner.ts";
-
-const { fileSystem } = constants;
 
 // if --help or -h is passed, show the help message
 if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
@@ -22,42 +19,51 @@ if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
   Deno.exit();
 }
 
-const firstData = fileSystem ? await df(["-h", fileSystem, "--output=used,avail,pcent"]) : "";
+if (
+  await Deno.stat("./constants.ts")
+    .then(() => true)
+    .catch(() => false)
+) {
+  const constants = (await import("./constants.ts")).default;
+  const { fileSystem } = constants;
 
-const duplicatedFilesCleaner = new DuplicatedFilesCleaner(constants);
+  const firstData = fileSystem ? await df(["-h", fileSystem, "--output=used,avail,pcent"]) : "";
 
-switch (Deno.args[0]) {
-  case "info": {
-    const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : duplicatedFilesCleaner.usedNodes;
-    const info = await duplicatedFilesCleaner.getInfo(nodes);
+  const duplicatedFilesCleaner = new DuplicatedFilesCleaner(constants);
 
-    for (const node of nodes) {
-      console.group(`\nNode ${node}:`);
-      console.table(info[node]);
-      console.groupEnd();
+  switch (Deno.args[0]) {
+    case "info": {
+      const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : duplicatedFilesCleaner.usedNodes;
+      const info = await duplicatedFilesCleaner.getInfo(nodes);
+
+      for (const node of nodes) {
+        console.group(`\nNode ${node}:`);
+        console.table(info[node]);
+        console.groupEnd();
+      }
+
+      break;
     }
 
-    break;
+    case "move": {
+      await duplicatedFilesCleaner.move(Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
+      break;
+    }
+
+    case "copy": {
+      const [, from = "", to = "", ...shards] = Deno.args;
+
+      if (shards.length === 0) shards.push("beacon");
+
+      if (from && to) await duplicatedFilesCleaner.copyData({ from, to, shards: shards as ShardsNames[] });
+      else console.error("Missing from and/or to node indexes.");
+      break;
+    }
+
+    default:
+      await duplicatedFilesCleaner.run();
   }
 
-  case "move": {
-    await duplicatedFilesCleaner.move(Deno.args[1], Deno.args[2], Deno.args.slice(3) as ShardsNames[]);
-    break;
-  }
-
-  case "copy": {
-    const [, from = "", to = "", ...shards] = Deno.args;
-
-    if (shards.length === 0) shards.push("beacon");
-
-    if (from && to) await duplicatedFilesCleaner.copyData({ from, to, shards: shards as ShardsNames[] });
-    else console.error("Missing from and/or to node indexes.");
-    break;
-  }
-
-  default:
-    await duplicatedFilesCleaner.run();
+  if (fileSystem)
+    console.log("\n", firstData, "\n", (await df(["-h", fileSystem, "--output=used,avail,pcent"])).slice(1));
 }
-
-if (fileSystem)
-  console.log("\n", firstData, "\n", (await df(["-h", fileSystem, "--output=used,avail,pcent"])).slice(1));
