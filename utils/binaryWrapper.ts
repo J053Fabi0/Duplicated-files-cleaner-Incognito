@@ -1,3 +1,4 @@
+import { join } from "../deps.ts";
 import spawnPromise from "./spawnPromise.ts";
 
 type BinaryWrapper = (
@@ -10,9 +11,9 @@ type BinaryWrapper = (
 
 /**
  * @param binaryName The name of the binary.
- * @param directory The directory of the binary, without trailing slash. You could use Deno.cwd()
+ * @param directoryPath The directory of the binary, if not in $PATH. You could use Deno.cwd().
  */
-const binaryWrapper = (binaryName: string, directory?: string) =>
-  spawnPromise.bind(undefined, directory ? `${directory}/${binaryName}` : binaryName);
+const binaryWrapper = (binaryName: string, directoryPath?: string) =>
+  spawnPromise.bind(undefined, directoryPath ? join(directoryPath, binaryName) : binaryName);
 
 export default binaryWrapper as BinaryWrapper;

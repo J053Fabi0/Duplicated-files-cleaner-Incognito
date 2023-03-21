@@ -1,10 +1,16 @@
 import binaryWrapper from "./binaryWrapper.ts";
-import getAllNodes from "./getAllNodes.ts";
 import repeatUntilNoError from "./repeatUntilNoError.ts";
 
 export const df = binaryWrapper("df");
 
 const _docker = binaryWrapper("docker");
+/**
+ * Start or stop docker containers.
+ * @param name The name or names of the containers.
+ * @param action The action to perform on the containers.
+ * @param maxRetries The maximum number of retries to perform the action if it fails. Default is 5.
+ * @returns The output of the command.
+ */
 export const docker = (name: string | string[], action: "start" | "stop", maxRetries = 5) =>
   repeatUntilNoError(
     () => _docker(["container", action, ...(typeof name === "string" ? [name] : name)], (v) => v.slice(0, -1)),
@@ -14,12 +20,15 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
   );
 
 type DockersStatus = Record<string, "ONLINE" | "OFFLINE">;
-let dockersStatus: DockersStatus | undefined = undefined;
-export const dockerPs = () =>
+let dockersStatusCache: DockersStatus | undefined = undefined;
+/**
+ * @param nodes The nodes to get the info from. If not provided, it will get the info from all nodes.
+ * @param useCache Use cache if exists. Default is false.
+ * @returns Key is the node index and value is the docker status ("ONLINE" or "OFFLINE").
+ */
+export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [], useCache = false) =>
   _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_"], (v) => {
-    // Return the cached value if it exists.
-    // Otherwise create it.
-    if (!dockersStatus) {
+    if (!dockersStatusCache || !useCache) {
       const tempDockersStatus = v
         // Get rid of a last "\n" that always has nothing.
         .slice(0, -1)
@@ -31,12 +40,11 @@ export const dockerPs = () =>
           return obj;
         }, {} as DockersStatus);
 
-      // Get all the nodes present in instructions
-      const allNodes = getAllNodes();
-
-      dockersStatus = {};
-      for (const dockerIndex of allNodes) dockersStatus[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
+      dockersStatusCache = {};
+      const numberOfNodes = nodes instanceof Set ? nodes.size : nodes.length;
+      for (const dockerIndex of numberOfNodes === 0 ? Object.keys(tempDockersStatus) : nodes)
+        dockersStatusCache[dockerIndex] = tempDockersStatus[dockerIndex] ?? "OFFLINE";
     }
 
-    return dockersStatus;
+    return dockersStatusCache;
   });

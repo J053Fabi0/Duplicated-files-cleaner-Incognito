@@ -1,21 +1,21 @@
 import { join } from "../deps.ts";
-import constants from "../constants.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
-
-const { homePath, storageFolder, instructions } = constants;
+import DuplicatedFilesCleaner from "../src/DuplicatedFilesCleaner.ts";
 
 export type StorageFile = LDBFile & { used: number };
 export type StorageFiles = Record<string, StorageFile[]>;
-export const homeStoragePath = join(homePath, storageFolder);
 
 let cached = false;
-const storageFiles: StorageFiles = {};
+const storageFilesCache: StorageFiles = {};
 
-export default function getStorageFiles(ignoreCache = false): StorageFiles {
-  if (cached && ignoreCache === false) return storageFiles;
+export default function getStorageFiles(
+  this: DuplicatedFilesCleaner,
+  { shards = this.usedShards, useCache = false } = {}
+): StorageFiles {
+  if (cached && useCache) return storageFilesCache;
 
-  for (const { shardName } of instructions) {
-    const shardStoragePath = join(homeStoragePath, shardName);
+  for (const shardName of shards) {
+    const shardStoragePath = join(this.homeStoragePath, shardName);
 
     // If it doesn't exist, create it.
     try {
@@ -29,9 +29,9 @@ export default function getStorageFiles(ignoreCache = false): StorageFiles {
       Deno.mkdirSync(shardStoragePath, { recursive: true });
     }
 
-    storageFiles[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: 0 }));
+    storageFilesCache[shardName] = getFiles(shardStoragePath).map((file) => ({ ...file, used: 0 }));
   }
 
   cached = true;
-  return storageFiles;
+  return storageFilesCache;
 }
