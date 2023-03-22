@@ -60,7 +60,7 @@ export default class DuplicatedFilesCleaner {
    * @param nodes The nodes to get the info from. If not provided, it will get the info from all nodes.
    * @returns An object with the first key being the node index and the second key being the shard name. The value is the number of files in the shards that have more than 30 files. It also includes the docker status of the node.
    */
-  declare getInfo: typeof getInfo;
+  declare getInfo: OmitThisParameter<typeof getInfo>;
 
   /**
    * Get the nodes' files for each shard.
@@ -70,7 +70,7 @@ export default class DuplicatedFilesCleaner {
    * @param allShards Get the files of all shards possible, not just the ones in the instructions. Default is false.
    * @return First key is the shard name, second key is the node number, and the value is an array of files.
    */
-  declare getFilesOfNodes: typeof getFilesOfNodes;
+  declare getFilesOfNodes: OmitThisParameter<typeof getFilesOfNodes>;
 
   /**
    * Move a shard from one node to another.
@@ -78,7 +78,7 @@ export default class DuplicatedFilesCleaner {
    * @param to The index of the node to copy to
    * @param shards The shards to copy. Defaults to ["beacon"]
    */
-  declare move: typeof move;
+  declare move: OmitThisParameter<typeof move>;
 
   /**
    * Copy a shard from one node to another.
@@ -87,16 +87,16 @@ export default class DuplicatedFilesCleaner {
    * @param shards The shards to copy. Defaults to ["beacon"]
    * @param logProgressBar Whether to log a progress bar. Defaults to false.
    */
-  declare copyData: typeof copyData;
+  declare copyData: OmitThisParameter<typeof copyData>;
 
   /** Runs the whole process of deleting duplicated files. */
-  declare run: typeof run;
+  declare run: OmitThisParameter<typeof run>;
 
   /**
    * Move the files of the nodes to the storage folder using hard links. No changes are made to the nodes.
    * @param useCache Use the cache if it exists. Default is false.
    */
-  declare moveFilesToStorage: typeof moveFilesToStorage;
+  declare moveFilesToStorage: OmitThisParameter<typeof moveFilesToStorage>;
 
   /**
    * Get the files in the storage directory.
@@ -105,7 +105,7 @@ export default class DuplicatedFilesCleaner {
    * @param useCachedFilesOfNodes If true, it will use the cached files of nodes. Default is false.
    * @returns The files in the storage directory.
    */
-  declare getStorageFiles: typeof getStorageFiles;
+  declare getStorageFiles: OmitThisParameter<typeof getStorageFiles>;
 
   /**
    * Substitute the files in the nodes with the files in the storage directory.
@@ -113,13 +113,13 @@ export default class DuplicatedFilesCleaner {
    * @param useCachedFilesOfNodes If true, it will use the cached files of nodes. Default is false.
    * @param useCachedDockersStatuses If true, it will use the cached docker statuses. Default is false.
    */
-  declare substituteFiles: typeof substituteFiles;
+  declare substituteFiles: OmitThisParameter<typeof substituteFiles>;
 
   /**
    * Delete unused files in the storage folder.
    * @param useCachedStorageFiles If true, it will use the cached storage files. Default is false.
    */
-  declare deleteUnusedFiles: typeof deleteUnusedFiles;
+  declare deleteUnusedFiles: OmitThisParameter<typeof deleteUnusedFiles>;
 }
 
 DuplicatedFilesCleaner.prototype.getInfo = getInfo;
