@@ -11,8 +11,8 @@ const bars = new MultiProgressBar({
 });
 
 interface CopyDataOptions {
-  to: string;
-  from: string;
+  to: string | number;
+  from: string | number;
   logProgressBar?: boolean;
   shards?: (ShardsStr | ShardsNumbers | ShardsNames)[];
 }
