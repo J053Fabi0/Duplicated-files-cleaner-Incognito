@@ -36,7 +36,9 @@ export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [],
         // Remove the first line that is the header.
         .slice(1)
         .reduce((obj, v) => {
-          obj[/(?<=inc_mainnet_)\d+/.exec(v)![0]] = / Up (\d+|about) /gi.test(v) ? "ONLINE" : "OFFLINE";
+          // Always considered as online because the command only returns running containers.
+          // No matter if it is restarting or not.
+          obj[/(?<=inc_mainnet_)\d+/.exec(v)![0]] = "ONLINE";
           return obj;
         }, {} as DockersStatus);
 
