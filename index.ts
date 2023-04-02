@@ -3,7 +3,7 @@ import { ShardsNames } from "./types/shards.type.ts";
 import DuplicatedFilesCleaner from "./src/DuplicatedFilesCleaner.ts";
 
 // if --help or -h is passed, show the help message
-if (Deno.args.includes("--help") || Deno.args.includes("-h")) {
+if (Deno.args.includes("--help") || Deno.args.includes("-h") || Deno.args.includes("help")) {
   console.log("Remove duplicated files:");
   console.log("    deno task run");
 
