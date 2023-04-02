@@ -1,8 +1,8 @@
-import { dockerPs } from "../utils/commands.ts";
+import { dockerPs, DockerStatus } from "../utils/commands.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
 import { ShardsNames, shardsNames } from "../types/shards.type.ts";
 
-export type Info = Record<ShardsNames, number> & { docker: "ONLINE" | "OFFLINE" };
+export type Info = Record<ShardsNames, number> & { docker: DockerStatus };
 
 export default async function getInfo(
   this: DuplicatedFilesCleaner,
