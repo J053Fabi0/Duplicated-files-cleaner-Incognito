@@ -32,7 +32,7 @@ let dockersStatusCache: DockersStatus | undefined = undefined;
  * @returns Key is the node index and value is the docker status ("ONLINE" or "OFFLINE").
  */
 export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [], useCache = false) =>
-  _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_", "--format", '"{{.Names}}¿{{.Status}}"'], (v) => {
+  _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_", "--format", "{{.Names}}¿{{.Status}}"], (v) => {
     if (!dockersStatusCache || !useCache) {
       const tempDockersStatus = v
         // Get rid of a last "\n" that always has nothing.
@@ -43,8 +43,8 @@ export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [],
           // Always considered as online because the command only returns running containers.
           // No matter if it is restarting or not.
           obj[name.slice(12)] = {
+            uptime: status,
             status: "ONLINE",
-            uptime: status.split(" ")[0],
             restarting: status.includes("Restarting"),
           };
 
