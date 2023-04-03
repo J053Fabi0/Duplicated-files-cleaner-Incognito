@@ -38,6 +38,7 @@ export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [],
         // Get rid of a last "\n" that always has nothing.
         .slice(0, -1)
         .split("\n")
+        .filter(Boolean)
         .reduce((obj, v) => {
           const [name, status] = v.split("¿");
           // Always considered as online because the command only returns running containers.
