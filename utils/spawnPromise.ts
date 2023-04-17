@@ -1,4 +1,4 @@
-import { readableStreamFromReader } from "streams";
+import { readableStreamFromReader } from "../deps.ts";
 
 /**
  * Spawns a command and returns the output.

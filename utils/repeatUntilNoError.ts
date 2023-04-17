@@ -1,4 +1,4 @@
-import { sleep } from "sleep";
+import { sleep } from "../deps.ts";
 
 /**
  * Executes a function until it doesn't throw any error.
