@@ -15,9 +15,10 @@ export default async function move(
   to: string | number,
   shards: (ShardsStr | ShardsNumbers | ShardsNames)[] = ["beacon"]
 ) {
-  const normShards = normalizeShards(shards);
+  const normalizedShards = normalizeShards(shards);
+  if (normalizedShards.length === 0) normalizedShards.push("beacon");
 
-  for (const shard of normShards) {
+  for (const shard of normalizedShards) {
     console.log(`Moving ${shard} from node ${from} to node ${to}.`);
 
     const fromShardPath = join(this.homePath, `/node_data_${from}/mainnet/block/${shard}`);

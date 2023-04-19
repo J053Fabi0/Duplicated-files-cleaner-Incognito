@@ -21,7 +21,10 @@ export default async function copyData(
   this: DuplicatedFilesCleaner,
   { to, from, shards = ["beacon"], logProgressBar = false }: CopyDataOptions
 ) {
-  for (const shard of normalizeShards(shards)) {
+  const normalizedShards = normalizeShards(shards);
+  if (normalizedShards.length === 0) normalizedShards.push("beacon");
+
+  for (const shard of normalizedShards) {
     console.log(`Moving ${shard}'s files from ${from} to ${to}`);
 
     const fromShardPath = join(this.homePath, `/node_data_${from}/mainnet/block/${shard}`);
