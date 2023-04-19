@@ -21,7 +21,8 @@ export default async function getInfo(
   for (const node of nodes)
     nodesInfo[node] = shardsNames.reduce(
       (obj, shard) => {
-        if (filesOfNodes[shard][node].length >= 30) obj[shard] = filesOfNodes[shard][node].length;
+        if (filesOfNodes[shard][node].length >= this.minFilesToConsiderShard)
+          obj[shard] = filesOfNodes[shard][node].length;
         return obj;
       },
       { docker: dockerStatus[node] } as Info

@@ -14,5 +14,6 @@ export default interface Constants {
   instructions: Instruction[];
   filesToStripIfOnline: number;
   filesToStripIfOffline: number;
+  minFilesToConsiderShard: number;
   validatorPublicKeys?: ValidatorPublicKeys;
 }

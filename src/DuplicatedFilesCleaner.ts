@@ -17,6 +17,7 @@ export default class DuplicatedFilesCleaner {
   instructions: Instruction[];
   filesToStripIfOnline: number;
   filesToStripIfOffline: number;
+  minFilesToConsiderShard: number;
 
   // They are calculated only once when they are called and then cached.
   #usedNodes: Set<number> | undefined = undefined;
@@ -29,12 +30,14 @@ export default class DuplicatedFilesCleaner {
     storageFolder,
     filesToStripIfOnline,
     filesToStripIfOffline,
+    minFilesToConsiderShard = 30,
   }: Omit<Constants, "fileSystem" | "validatorPublicKeys">) {
     this.homePath = homePath;
     this.instructions = instructions;
     this.storageFolder = storageFolder;
     this.filesToStripIfOnline = filesToStripIfOnline;
     this.filesToStripIfOffline = filesToStripIfOffline;
+    this.minFilesToConsiderShard = minFilesToConsiderShard;
   }
 
   get homeStoragePath() {
