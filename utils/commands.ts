@@ -19,50 +19,74 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
     (e, i) => console.log(`Error on attempt ${i} of ${maxRetries} to ${action} container ${name}:\n${e}`)
   );
 
-export interface DockerStatus {
-  uptime: string;
+type Status = "created" | "restarting" | "running" | "removing" | "paused" | "exited" | "dead";
+interface RawDockerInfo {
+  name: string;
+  status: Status;
+  paused: boolean;
+  running: boolean;
+  startedAt: string;
+  finishedAt: string;
   restarting: boolean;
-  status: "ONLINE" | "OFFLINE";
 }
-export type DockersStatus = Record<string, DockerStatus>;
+export interface DockerInfo extends Omit<RawDockerInfo, "startedAt" | "finishedAt"> {
+  startedAt: Date;
+  finishedAt: Date;
+}
+export type DockersStatus = Record<string, DockerInfo>;
 let dockersStatusCache: DockersStatus | undefined = undefined;
 /**
- * @param nodes The nodes to get the info from. If not provided, it will get the info from all nodes.
- * @param useCache Use cache if exists. Default is false.
- * @returns Key is the node index and value is the docker status ("ONLINE" or "OFFLINE").
+ * @param nodes The index of the nodes. If not provided, it will get the info from all nodes.
+ * @param useCache Use cached value if exists. Default is false.
+ * @returns Key is the node index.
  */
-export const dockerPs = (nodes: (number | string)[] | Set<number | string> = [], useCache = false) =>
-  _docker(["ps", "--no-trunc", "--filter", "name=^inc_mainnet_", "--format", "{{.Names}}¿{{.Status}}"], (v) => {
-    if (!dockersStatusCache || !useCache) {
-      const tempDockersStatus = v
-        // Get rid of a last "\n" that always has nothing.
-        .slice(0, -1)
-        .split("\n")
-        .filter(Boolean)
-        .reduce((obj, v) => {
-          const [name, status] = v.split("¿");
-          // Always considered as online because the command only returns running containers.
-          // No matter if it is restarting or not.
-          obj[name.slice(12)] = {
-            uptime: status,
-            status: "ONLINE",
-            restarting: status.includes("Restarting"),
-          };
+export async function dockerPs(nodes: (number | string)[] | Set<number | string> = [], useCache = false) {
+  if (useCache && dockersStatusCache) return dockersStatusCache;
 
-          return obj;
-        }, {} as DockersStatus);
+  const args = [
+    "inspect",
+    "--format",
+    "{" +
+      '"name":       "{{.Name}}",' +
+      '"paused":      {{.State.Paused}},' +
+      '"status":     "{{.State.Status}}",' +
+      '"running":     {{.State.Running}},' +
+      '"restarting":  {{.State.Restarting}},' +
+      '"startedAt":  "{{.State.StartedAt}}",' +
+      '"finishedAt": "{{.State.FinishedAt}}"' +
+      "},",
+  ];
 
-      dockersStatusCache = {};
-      const numberOfNodes = nodes instanceof Set ? nodes.size : nodes.length;
-      for (const dockerIndex of numberOfNodes === 0 ? Object.keys(tempDockersStatus) : nodes)
-        dockersStatusCache[dockerIndex] = tempDockersStatus[dockerIndex]
-          ? tempDockersStatus[dockerIndex]
-          : {
-              uptime: "",
-              status: "OFFLINE",
-              restarting: false,
-            };
-    }
+  const numberOfNodes = nodes instanceof Set ? nodes.size : nodes.length;
+  if (numberOfNodes === 0) {
+    // push the ids of all nodes
+    const ids = await _docker(["ps", "-aq", "--filter", "name=^inc_mainnet_\\d"], (v) =>
+      v.split("\n").filter(Boolean)
+    );
+    args.push(...ids);
+  } else {
+    // push the names of the provided nodes
+    args.push(...(nodes instanceof Set ? [...nodes] : nodes).map((v) => `inc_mainnet_${v}`));
+  }
 
-    return dockersStatusCache;
-  });
+  const dockersInfo = (await _docker(args, (v) => JSON.parse(`[${v.slice(0, -2)}]`) as RawDockerInfo[])).reduce(
+    (obj, v) => {
+      // The names are in the format "/inc_mainnet_1" so we get rid of the first 13 characters.
+      obj[v.name.slice(13)] = {
+        ...v,
+        name: v.name.slice(1),
+        startedAt: new Date(v.startedAt),
+        finishedAt: new Date(v.finishedAt),
+      };
+
+      return obj;
+    },
+    {} as DockersStatus
+  );
+
+  dockersStatusCache = dockersInfo;
+
+  return dockersInfo;
+}
+
+console.log(await dockerPs());
