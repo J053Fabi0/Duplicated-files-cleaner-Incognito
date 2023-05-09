@@ -20,28 +20,49 @@ export const docker = (name: string | string[], action: "start" | "stop", maxRet
   );
 
 type Status = "created" | "restarting" | "running" | "removing" | "paused" | "exited" | "dead";
+
 interface RawDockerInfo {
+  /** The full name of the container. */
   name: string;
+  /**
+   * The status of the container.
+   * - `created`: The container has been created, but not started.
+   * - `restarting`: The container is in the process of being restarted.
+   * - `running`: The container is currently running.
+   * - `removing`: The container is in the process of being removed.
+   * - `paused`: The container has been paused.
+   * - `exited`: The container has exited.
+   * - `dead`: The container has died due to an error or crash.
+   */
   status: Status;
+  /** Whether the container is paused with the command `docker pause`. */
   paused: boolean;
+  /** Whether the container is running. */
   running: boolean;
+  /** The date when the container was started. */
   startedAt: string;
+  /** The date when the container was finished. */
   finishedAt: string;
+  /** Whether the container is restarting. */
   restarting: boolean;
 }
+
 export interface DockerInfo extends Omit<RawDockerInfo, "startedAt" | "finishedAt"> {
   startedAt: Date;
   finishedAt: Date;
 }
-export type DockersStatus = Record<string, DockerInfo>;
-let dockersStatusCache: DockersStatus | undefined = undefined;
+
+export type DockersInfo = Record<string, DockerInfo>;
+
+let dockersInfoCache: DockersInfo | undefined = undefined;
+
 /**
  * @param nodes The index of the nodes. If not provided, it will get the info from all nodes.
  * @param useCache Use cached value if exists. Default is false.
- * @returns Key is the node index.
+ * @returns The info of the containers.
  */
 export async function dockerPs(nodes: (number | string)[] | Set<number | string> = [], useCache = false) {
-  if (useCache && dockersStatusCache) return dockersStatusCache;
+  if (useCache && dockersInfoCache) return dockersInfoCache;
 
   const args = [
     "inspect",
@@ -58,6 +79,7 @@ export async function dockerPs(nodes: (number | string)[] | Set<number | string>
   ];
 
   const numberOfNodes = nodes instanceof Set ? nodes.size : nodes.length;
+
   if (numberOfNodes === 0) {
     // push the ids of all nodes
     const ids = await _docker(["ps", "-aq", "--filter", "name=^inc_mainnet_\\d"], (v) =>
@@ -81,12 +103,10 @@ export async function dockerPs(nodes: (number | string)[] | Set<number | string>
 
       return obj;
     },
-    {} as DockersStatus
+    {} as DockersInfo
   );
 
-  dockersStatusCache = dockersInfo;
+  dockersInfoCache = dockersInfo;
 
   return dockersInfo;
 }
-
-console.log(await dockerPs());
