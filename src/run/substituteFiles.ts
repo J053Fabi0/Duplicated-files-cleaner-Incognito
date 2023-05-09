@@ -25,7 +25,7 @@ export default async function substituteFiles(
       let filesProcessed = 0;
 
       // if filesToStripIfOnline is negative, only deal with offline nodes
-      if (this.filesToStripIfOnline < 0 && dockerStatuses[node].status === "ONLINE")
+      if (this.filesToStripIfOnline < 0 && dockerStatuses[node].running)
         console.log("Skipping node", node, "because it is online and filesToStripIfOffline is negative.");
       else
         await Promise.all(

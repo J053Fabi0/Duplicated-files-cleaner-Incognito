@@ -14,6 +14,6 @@ export { default as normalizeShards, normalizeShard } from "./utils/normalizeSha
 // Types
 export type { Info } from "./src/getInfo.ts";
 export type { LDBFile } from "./utils/getFiles.ts";
-export type { DockersStatus, DockerInfo } from "./utils/commands.ts";
+export type { DockersInfo, DockerInfo } from "./utils/commands.ts";
 export type { default as ShardsNumbers, ShardsNames, ShardsStr } from "./types/shards.type.ts";
 export type { default as Constants, Instruction, ValidatorPublicKeys } from "./types/constants.type.ts";

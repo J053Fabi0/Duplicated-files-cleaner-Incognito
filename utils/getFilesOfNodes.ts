@@ -31,10 +31,10 @@ export default async function getFilesOfNodes(
     for (const node of nodes) {
       const stripValue = strip
         ? // strip only if the node is online and filesToStripIfOnline is positive
-          dockerStatuses[node].status === "ONLINE" && this.filesToStripIfOnline >= 0
+          dockerStatuses[node].running && this.filesToStripIfOnline >= 0
           ? this.filesToStripIfOnline
           : // or if the node is offline and filesToStripIfOffline is positive
-          dockerStatuses[node].status === "OFFLINE" && this.filesToStripIfOffline >= 0
+          !dockerStatuses[node].running && this.filesToStripIfOffline >= 0
           ? this.filesToStripIfOffline
           : 0
         : 0;
