@@ -3,8 +3,8 @@
     "lokijs": "https://esm.sh/lokijs@1.5.12",
     "axiod": "https://deno.land/x/axiod@0.26.2/mod.ts",
     "sleep": "https://deno.land/x/sleep@v1.2.1/mod.ts",
-    "node": "https://deno.land/std@0.160.0/node/module.ts",
-    "streams": "https://deno.land/std@0.160.0/streams/mod.ts",
+    "node": "https://deno.land/std@0.177.1/node/module.ts",
+    "streams": "https://deno.land/std@0.177.1/streams/mod.ts",
     "lodash": "https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts"
   }
 }
