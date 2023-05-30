@@ -46,26 +46,28 @@ There are 3 ways to set `constants.jsonc`:
 <!-- Files in build: x86_64-unknown-linux-gnu, x86_64-pc-windows-msvc, x86_64-apple-darwin, aarch64-apple-darwin -->
 
 1. Download the binary for your platform from the
-   [build folder](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/build).
+   [build folder](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/binaries/build).
 
    - Linux:
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/x86_64-unknown-linux-gnu -O duplicatedFilesCleaner`
+     `wget https://media.githubusercontent.com/media/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/build/x86_64-unknown-linux-gnu -O duplicatedFilesCleaner`
    - Windows:
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/x86_64-pc-windows-msvc.exe -O duplicatedFilesCleaner.exe`
+     `wget https://media.githubusercontent.com/media/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/build/x86_64-pc-windows-msvc.exe -O duplicatedFilesCleaner.exe`
    - MacOS:
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/x86_64-apple-darwin -O duplicatedFilesCleaner`
-   - ARM MacOS:
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/aarch64-apple-darwin -O duplicatedFilesCleaner`
+     `wget https://media.githubusercontent.com/media/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/build/x86_64-apple-darwin -O duplicatedFilesCleaner`
+   - Apple Silicon:
+     `wget https://media.githubusercontent.com/media/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/build/aarch64-apple-darwin -O duplicatedFilesCleaner`
 
 1. Make it executable: `chmod +x duplicatedFilesCleaner`.
+
 1. Download the `constants.jsonc` from one of the examples:
-   - [Example 1](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/constants.example1.jsonc):
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/constants.example1.jsonc -O constants.jsonc`
-   - [Example 2](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/constants.example2.jsonc):
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/constants.example2.jsonc -O constants.jsonc`
-   - [Example 3](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/constants.example3.jsonc):
-     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/constants.example3.jsonc -O constants.jsonc`
+   - [Example 1](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/binaries/constants.example1.jsonc):
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/constants.example1.jsonc -O constants.jsonc`
+   - [Example 2](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/binaries/constants.example2.jsonc):
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/constants.example2.jsonc -O constants.jsonc`
+   - [Example 3](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/binaries/constants.example3.jsonc):
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/binaries/constants.example3.jsonc -O constants.jsonc`
 1. Modify `constants.jsonc` to suit your needs. The validator public keys are needed.
+
 1. Run `./duplicatedFilesCleaner` in the same directory as `constants.jsonc` or use `--config` to specify a
    different path for the config file.
 
