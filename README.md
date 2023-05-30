@@ -29,7 +29,7 @@ There are 3 ways to set `constants.jsonc`:
 
 # Dependencies
 
-1. `deno`. See [installation guide](https://deno.land/manual/getting_started/installation)
+1. None, not even deno. The binary is self-contained. 🦕 This is the power of `deno compile`.
 
 ## To add deno to the path, after installing it.
 
@@ -42,8 +42,6 @@ There are 3 ways to set `constants.jsonc`:
 1. `. .bashrc`.
 
 # How to use
-
-<!-- Files in build: x86_64-unknown-linux-gnu, x86_64-pc-windows-msvc, x86_64-apple-darwin, aarch64-apple-darwin -->
 
 1. Download the binary for your platform from the
    [build folder](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/binaries/build).
