@@ -1,7 +1,7 @@
 import axiod from "axiod";
 import flags from "./flags.ts";
 import { lodash } from "lodash";
-import constants from "../constants.ts";
+import constants from "../constantsImporter.ts";
 import { dockerPs } from "./commands.ts";
 import Roles from "../types/roles.type.ts";
 import shouldNodeBeSkipped from "./shouldNodeBeSkipped.ts";

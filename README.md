@@ -1,15 +1,16 @@
 # Read before using
 
-The validator public keys inside `constants.ts` are mandatory for this script to work. They are used to get the
+The validator public keys inside `constants.jsonc` are mandatory for this script to work. They are used to get the
 shard each node is in and the current committee role, to avoid stopping nodes which are mining.
 
-There are 3 ways to set `constants.ts`:
+There are 3 ways to set `constants.jsonc`:
 
-1. With just validator public keys, as in `constants.expamle1.ts`. This will try to create instructions, relaying
-   on the [monitor's API](https://monitor.incognito.org).
+1. With just validator public keys, as in `constants.expamle1.jsonc`. This will try to create instructions,
+   relaying on the [monitor's API](https://monitor.incognito.org).
 
-2. Setting your own instructions, as in `constants.example2.ts`. This is an alternative if the first option fails
-   or if you want to take control over the instructions. `fromNodeIndex` is optional. You could write it like this:
+2. Setting your own instructions, as in `constants.example2.jsonc`. This is an alternative if the first option
+   fails or if you want to take control over the instructions. `fromNodeIndex` is optional. You could write it like
+   this:
 
    ```js
    instructions: [
@@ -24,7 +25,7 @@ There are 3 ways to set `constants.ts`:
    choosing the most updated to be the seeder. The chosen node will always be one which won't be skipped. Nodes can
    be skipped if they are about or in `COMMITEE` or for other reasons.
 
-3. Same as 2, but with a fullnode as source or any other data source, as in `constants.example3.ts`.
+3. Same as 2, but with a fullnode as source or any other data source, as in `constants.example3.jsonc`.
 
 # Dependencies
 
@@ -42,15 +43,35 @@ There are 3 ways to set `constants.ts`:
 
 # How to use
 
-1. Clone the repository in your server and change directory to it.
-1. Change to this branch with `git checkout deno`.
-1. Copy the `constants.exampleX.ts` you want to `constants.ts`: example `cp constants.example1.ts constants.ts`.
-1. Modify `constants.ts` to suit your needs. The validator public keys are needed.
-1. Run `deno task run`.
+<!-- Files in build: x86_64-unknown-linux-gnu, x86_64-pc-windows-msvc, x86_64-apple-darwin, aarch64-apple-darwin -->
 
-If you want to update the code, run `git pull`.
+1. Download the binary for your platform from the
+   [build folder](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/build).
+
+   - Linux:
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/x86_64-unknown-linux-gnu -O duplicatedFilesCleaner`
+   - Windows:
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/x86_64-pc-windows-msvc.exe -O duplicatedFilesCleaner.exe`
+   - MacOS:
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/x86_64-apple-darwin -O duplicatedFilesCleaner`
+   - ARM MacOS:
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/build/aarch64-apple-darwin -O duplicatedFilesCleaner`
+
+1. Make it executable: `chmod +x duplicatedFilesCleaner`.
+1. Download the `constants.jsonc` from one of the examples:
+   - [Example 1](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/constants.example1.jsonc):
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/constants.example1.jsonc -O constants.jsonc`
+   - [Example 2](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/constants.example2.jsonc):
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/constants.example2.jsonc -O constants.jsonc`
+   - [Example 3](https://github.com/J053Fabi0/Duplicated-files-cleaner-Incognito/blob/deno/constants.example3.jsonc):
+     `wget https://raw.githubusercontent.com/J053Fabi0/Duplicated-files-cleaner-Incognito/deno/constants.example3.jsonc -O constants.jsonc`
+1. Modify `constants.jsonc` to suit your needs. The validator public keys are needed.
+1. Run `./duplicatedFilesCleaner` in the same directory as `constants.jsonc` or use `--config` to specify a
+   different path for the config file.
 
 ## Useful flags
+
+`--config`: Path to the config file. Defaults to `./constants.jsonc` in the current directory.
 
 `--keep-status`: Only start the nodes that were online before the script started. It keeps nodes offline if they
 were offline.
@@ -65,10 +86,5 @@ check for the nodes that are in or about to be in committee.
 With crontab you can configure the script to run every day.
 
 1. Run `crontab -e`
-1. Write `0 0 * * * deno task --cwd /root/Duplicated-files-cleaner-Incognito run` at the end of the file, modifying
-   the path if yours is different. I recommend runnig the deno command before to see if it works.
-
-# Troubleshooting
-
-If you run into problems, you can safely delete the file located at `db/database.db` and try again. If that doesn't
-solve the problem, open an issue.
+1. Write `0 0 * * * /path/to/duplicatedFilesCleaner --config /path/to/constants.jsonc` at the end of the file,
+   modifying the path if yours is different. I recommend runnig the deno command before to see if it works.

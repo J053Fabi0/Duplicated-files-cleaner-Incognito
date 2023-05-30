@@ -1,11 +1,11 @@
-import constants from "../constants.ts";
-import { Instruction, InstructionIncomplete } from "../types/constants.type.ts";
+import constants from "../constantsImporter.ts";
+import { NodesStatus } from "./getNodesStatus.ts";
+import getNumberOfFiles from "./getNumberOfFiles.ts";
+import { Instruction } from "../types/constants.type.ts";
 import { nodesDB } from "../db/collections/collections.ts";
 import Shards, { ShardsNames } from "../types/shards.type.ts";
 import checkIfAllShardsHaveSeed from "./checkIfAllShardsHaveSeed.ts";
 import checkIfConstantsHaveChanged from "./checkIfConstantsHaveChanged.ts";
-import { NodesStatus } from "./getNodesStatus.ts";
-import getNumberOfFiles from "./getNumberOfFiles.ts";
 
 export default async function getInstructions(nodesStatus: NodesStatus) {
   // If the instructions are already defined in the constants file, then just return them.

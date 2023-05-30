@@ -1,6 +1,6 @@
 import flags from "./utils/flags.ts";
 import db from "./db/initDatabase.ts";
-import constants from "./constants.ts";
+import constants from "./constantsImporter.ts";
 import getNodesStatus from "./utils/getNodesStatus.ts";
 import getInstructions from "./utils/getInstructions.ts";
 import { docker, rm, cp, chown, getExtraFiles, dockerPs } from "./utils/commands.ts";

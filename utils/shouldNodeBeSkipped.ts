@@ -1,5 +1,6 @@
-import constants from "../constants.ts";
+import constants from "../constantsImporter.ts";
 import { NodeStatus } from "./getNodesStatus.ts";
+
 const { maxEpochsToNextEvent = 3 } = constants;
 
 const shouldNodeBeSkipped = (nodeInfo: Omit<NodeStatus, "skip">) =>

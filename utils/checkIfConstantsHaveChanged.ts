@@ -1,6 +1,6 @@
 import axiod from "axiod";
-import constants from "../constants.ts";
 import Shards from "../types/shards.type.ts";
+import constants from "../constantsImporter.ts";
 import { nodesDB } from "../db/collections/collections.ts";
 
 const { validatorPublicKeys = {} } = constants;
