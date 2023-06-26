@@ -1,5 +1,3 @@
-import { readableStreamFromReader } from "../deps.ts";
-
 /**
  * Spawns a command and returns the output.
  * @param command The command to spawn.
@@ -15,13 +13,7 @@ const spawnPromise = async <returnType>(
   if (!(args instanceof Array)) args = [args];
   args = args.map((a) => a.toString());
 
-  const process = new Deno.Command(command, {
-    args,
-    stderr: "piped",
-    stdout: "piped",
-  });
-
-  const output = await process.output();
+  const output = await new Deno.Command(command, { args }).output();
 
   if (output.success) return parser(new TextDecoder().decode(output.stdout));
   else throw new Error(new TextDecoder().decode(output.stderr));
