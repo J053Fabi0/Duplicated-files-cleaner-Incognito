@@ -15,24 +15,16 @@ const spawnPromise = async <returnType>(
   if (!(args instanceof Array)) args = [args];
   args = args.map((a) => a.toString());
 
-  const process = Deno.run({ cmd: [command, ...args], stderr: "piped", stdout: "piped" });
+  const process = new Deno.Command(command, {
+    args,
+    stderr: "piped",
+    stdout: "piped",
+  });
 
-  const stderr: string[] = [];
-  const decoder = new TextDecoder();
-  readableStreamFromReader(process.stderr).pipeTo(
-    new WritableStream({
-      write(chunk) {
-        const decoded = decoder.decode(chunk).split(/\r?\n/).filter(Boolean);
-        for (const line of decoded) stderr.push(line);
-      },
-    })
-  );
+  const output = await process.output();
 
-  const stdout = new TextDecoder().decode(await process.output());
-
-  if (stderr.length > 0) throw new Error(stderr.join("\n"));
-
-  return parser(stdout);
+  if (output.success) return parser(new TextDecoder().decode(output.stdout));
+  else throw new Error(new TextDecoder().decode(output.stderr));
 };
 
 export default spawnPromise;
