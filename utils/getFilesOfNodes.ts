@@ -4,27 +4,18 @@ import { shardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
 import DuplicatedFilesCleaner from "../src/DuplicatedFilesCleaner.ts";
 
-// const { instructions, homePath, filesToStripIfOnline, filesToStripIfOffline } = constants;
-
 let cached = false;
 const filesOfNodes: Record<string, Record<string, LDBFile[]>> = {};
 
 export default async function getFilesOfNodes(
   this: DuplicatedFilesCleaner,
-  {
-    strip = true,
-    allShards = false,
-    useCache = false,
-    nodes = this.usedNodes as Set<number | string> | (number | string)[],
-  } = {}
+  { strip = true, useCache = false, nodes = this.dockerIndexes as Set<number | string> | (number | string)[] } = {}
 ) {
   if (cached && useCache) return filesOfNodes;
 
-  const dockerStatuses = await dockerPs(this.usedNodes, useCache);
+  const dockerStatuses = await dockerPs(this.dockerIndexes, useCache);
 
-  const newInstructions = allShards
-    ? shardsNames.map((shardName) => ({ shardName, nodes: nodes }))
-    : this.instructions;
+  const newInstructions = shardsNames.map((shardName) => ({ shardName, nodes: nodes }));
 
   for (const { shardName, nodes } of newInstructions) {
     filesOfNodes[shardName] = {};

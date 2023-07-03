@@ -11,7 +11,7 @@ export default async function run(this: DuplicatedFilesCleaner) {
     await this.substituteFiles({ useCachedFilesOfNodes: true, useCachedStorageFiles: true });
 
     // Delete the files that are not used.
-    await this.deleteUnusedFiles(true);
+    await this.deleteUnusedFiles({ useCachedStorageFiles: true });
   } catch (e) {
     console.error(e);
   }

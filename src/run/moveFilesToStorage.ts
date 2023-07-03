@@ -1,14 +1,25 @@
 import { join } from "../../deps.ts";
+import { ShardsNames } from "../../mod.ts";
 import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
+
+interface MoveFilesToStorageOptions {
+  useCachedStorageFiles?: boolean;
+  useCachedFilesOfNodes?: boolean;
+  shards?: ShardsNames[];
+}
 
 export default async function moveFilesToStorage(
   this: DuplicatedFilesCleaner,
-  { useCachedStorageFiles = false, useCachedFilesOfNodes = false } = {}
+  {
+    useCachedStorageFiles = false,
+    useCachedFilesOfNodes = false,
+    shards = ["beacon"],
+  }: MoveFilesToStorageOptions = {}
 ) {
   const storageFiles = this.getStorageFiles({ useCache: useCachedStorageFiles });
   const filesOfNodes = await this.getFilesOfNodes({ useCache: useCachedFilesOfNodes, strip: true });
 
-  for (const { shardName, nodes } of this.instructions) {
+  for (const shardName of shards) {
     const shardStorageFiles = storageFiles[shardName];
     const shardStoragePath = join(this.homeStoragePath, shardName);
 
@@ -16,7 +27,7 @@ export default async function moveFilesToStorage(
     const numberOfFiles = shardStorageFiles.length;
     console.log("Number of files:", numberOfFiles);
 
-    for (const node of nodes) {
+    for (const node of this.dockerIndexes) {
       console.log(`Prossesing node ${node}`);
 
       const shardPath = join(this.homePath, `/node_data_${node}/mainnet/block/${shardName}`);

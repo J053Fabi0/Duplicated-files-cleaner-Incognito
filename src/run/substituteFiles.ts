@@ -1,21 +1,34 @@
 import { join } from "../../deps.ts";
+import { ShardsNames } from "../../mod.ts";
 import { dockerPs } from "../../utils/commands.ts";
 import DuplicatedFilesCleaner from "../DuplicatedFilesCleaner.ts";
 
+interface SubstituteFilesOptions {
+  useCachedStorageFiles?: boolean;
+  useCachedFilesOfNodes?: boolean;
+  useCachedDockersStatuses?: boolean;
+  shards?: ShardsNames[];
+}
+
 export default async function substituteFiles(
   this: DuplicatedFilesCleaner,
-  { useCachedStorageFiles = false, useCachedFilesOfNodes = false, useCachedDockersStatuses = false } = {}
+  {
+    shards = ["beacon"],
+    useCachedStorageFiles = false,
+    useCachedFilesOfNodes = false,
+    useCachedDockersStatuses = false,
+  }: SubstituteFilesOptions = {}
 ) {
   const storageFiles = this.getStorageFiles({ useCache: useCachedStorageFiles });
   const filesOfNodes = await this.getFilesOfNodes({ useCache: useCachedFilesOfNodes });
-  const dockerStatuses = await dockerPs(this.usedNodes, useCachedDockersStatuses);
+  const dockerStatuses = await dockerPs(this.dockerIndexes, useCachedDockersStatuses);
 
-  for (const { shardName, nodes } of this.instructions) {
+  for (const shardName of shards) {
     console.group(`Substituting files in ${shardName}`);
 
     const shardStoragePath = join(this.homeStoragePath, shardName);
 
-    for (const node of nodes) {
+    for (const node of this.dockerIndexes) {
       console.group("Prossesing node", node);
 
       const shardStorageFiles = storageFiles[shardName];

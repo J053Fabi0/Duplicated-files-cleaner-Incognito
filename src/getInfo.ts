@@ -6,14 +6,13 @@ export type Info = Partial<Record<ShardsNames, number>> & { docker: DockerInfo }
 
 export default async function getInfo(
   this: DuplicatedFilesCleaner,
-  nodes: (string | number)[] | Set<string | number> = this.usedNodes
+  nodes: (string | number)[] | Set<string | number> = this.dockerIndexes
 ) {
   const dockerStatus = await dockerPs(nodes instanceof Set ? [...nodes] : nodes);
 
   const filesOfNodes = await this.getFilesOfNodes({
     nodes,
     strip: false,
-    allShards: true,
   });
 
   const nodesInfo: Record<string, Info> = {};

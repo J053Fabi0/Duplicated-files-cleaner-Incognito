@@ -1,4 +1,5 @@
 import { join } from "../deps.ts";
+import { shardsNames } from "../mod.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
 import DuplicatedFilesCleaner from "../src/DuplicatedFilesCleaner.ts";
 
@@ -10,7 +11,7 @@ const storageFilesCache: StorageFiles = {};
 
 export default function getStorageFiles(
   this: DuplicatedFilesCleaner,
-  { shards = this.usedShards, useCache = false } = {}
+  { shards = shardsNames, useCache = false } = {}
 ): StorageFiles {
   if (cached && useCache) return storageFilesCache;
 

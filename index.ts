@@ -33,7 +33,7 @@ if (
 
   switch (Deno.args[0]) {
     case "info": {
-      const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : duplicatedFilesCleaner.usedNodes;
+      const nodes = Deno.args.length >= 2 ? Deno.args.slice(1) : duplicatedFilesCleaner.dockerIndexes;
       const info = await duplicatedFilesCleaner.getInfo(nodes);
 
       for (const node of nodes) {

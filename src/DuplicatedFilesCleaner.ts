@@ -3,37 +3,34 @@ import run from "./run/run.ts";
 import { join } from "../deps.ts";
 import getInfo from "./getInfo.ts";
 import copyData from "./copyData.ts";
-import { ShardsNames } from "../types/shards.type.ts";
+import Constants from "../types/constants.type.ts";
 import substituteFiles from "./run/substituteFiles.ts";
 import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
 import getStorageFiles from "../utils/getStorageFiles.ts";
 import deleteUnusedFiles from "./run/deleteUnusedFiles.ts";
 import moveFilesToStorage from "./run/moveFilesToStorage.ts";
-import Constants, { Instruction } from "../types/constants.type.ts";
 
 export default class DuplicatedFilesCleaner {
   homePath: string;
   storageFolder: string;
-  instructions: Instruction[];
+  dockerIndexes: number[];
   filesToStripIfOnline: number;
   filesToStripIfOffline: number;
   minFilesToConsiderShard: number;
 
   // They are calculated only once when they are called and then cached.
-  #usedNodes: Set<number> | undefined = undefined;
   #homeStoragePath: string | undefined = undefined;
-  #usedShards: ShardsNames[] | undefined = undefined;
 
   constructor({
     homePath,
-    instructions,
+    dockerIndexes,
     storageFolder,
     filesToStripIfOnline,
     filesToStripIfOffline,
     minFilesToConsiderShard = 30,
   }: Omit<Constants, "fileSystem" | "validatorPublicKeys">) {
     this.homePath = homePath;
-    this.instructions = instructions;
+    this.dockerIndexes = dockerIndexes;
     this.storageFolder = storageFolder;
     this.filesToStripIfOnline = filesToStripIfOnline;
     this.filesToStripIfOffline = filesToStripIfOffline;
@@ -43,19 +40,6 @@ export default class DuplicatedFilesCleaner {
   get homeStoragePath() {
     if (this.#homeStoragePath) return this.#homeStoragePath;
     return (this.#homeStoragePath = join(this.homePath, this.storageFolder));
-  }
-
-  get usedNodes() {
-    if (this.#usedNodes) return this.#usedNodes;
-    return (this.#usedNodes = this.instructions.reduce((set, i) => {
-      for (const node of i.nodes) set.add(node);
-      return set;
-    }, new Set<number>()));
-  }
-
-  get usedShards() {
-    if (this.#usedShards) return this.#usedShards;
-    return (this.#usedShards = this.instructions.map((i) => i.shardName));
   }
 
   /**
@@ -97,15 +81,16 @@ export default class DuplicatedFilesCleaner {
 
   /**
    * Move the files of the nodes to the storage folder using hard links. No changes are made to the nodes.
-   * @param useCache Use the cache if it exists. Default is false.
+   * @param useCachedStorageFiles If true, it will use the cached storage files. Default is false.
+   * @param useCachedFilesOfNodes If true, it will use the cached files of nodes. Default is false.
+   * @param shards The shards to substitute. Default: beacon.
    */
   declare moveFilesToStorage: OmitThisParameter<typeof moveFilesToStorage>;
 
   /**
    * Get the files in the storage directory.
+   * @param useCache Use the cache if it exists. Default is false.
    * @param shards The shards to get the files from. Default: all shards present in instructions.
-   * @param useCachedStorageFiles If true, it will use the cached storage files. Default is false.
-   * @param useCachedFilesOfNodes If true, it will use the cached files of nodes. Default is false.
    * @returns The files in the storage directory.
    */
   declare getStorageFiles: OmitThisParameter<typeof getStorageFiles>;
@@ -115,12 +100,14 @@ export default class DuplicatedFilesCleaner {
    * @param useCachedStorageFiles If true, it will use the cached storage files. Default is false.
    * @param useCachedFilesOfNodes If true, it will use the cached files of nodes. Default is false.
    * @param useCachedDockersStatuses If true, it will use the cached docker statuses. Default is false.
+   * @param shards The shards to substitute. Default: beacon.
    */
   declare substituteFiles: OmitThisParameter<typeof substituteFiles>;
 
   /**
    * Delete unused files in the storage folder.
    * @param useCachedStorageFiles If true, it will use the cached storage files. Default is false.
+   * @param shards The shards to substitute. Default: beacon.
    */
   declare deleteUnusedFiles: OmitThisParameter<typeof deleteUnusedFiles>;
 }
