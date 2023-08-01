@@ -23,3 +23,6 @@ export const shardsNames = [
   "shard6",
   "shard7",
 ] as const;
+
+export const shardsNumbersStr = ["0", "1", "2", "3", "4", "5", "6", "7"] as const;
+export const shardsNumbers = [0, 1, 2, 3, 4, 5, 6, 7] as const;

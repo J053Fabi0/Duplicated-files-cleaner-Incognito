@@ -91,20 +91,19 @@ export async function dockerPs(nodes: (number | string)[] | Set<number | string>
     args.push(...(nodes instanceof Set ? [...nodes] : nodes).map((v) => `inc_mainnet_${v}`));
   }
 
-  const dockersInfo = (await _docker(args, (v) => JSON.parse(`[${v.slice(0, -2)}]`) as RawDockerInfo[])).reduce(
-    (obj, v) => {
-      // The names are in the format "/inc_mainnet_1" so we get rid of the first 13 characters.
-      obj[v.name.slice(13)] = {
-        ...v,
-        name: v.name.slice(1),
-        startedAt: new Date(v.startedAt),
-        finishedAt: new Date(v.finishedAt),
-      };
+  const dockersInfo: DockersInfo = (
+    await _docker(args, (v) => JSON.parse(`[${v.slice(0, -2)}]`) as RawDockerInfo[])
+  ).reduce((obj, v) => {
+    // The names are in the format "/inc_mainnet_1" so we get rid of the first 13 characters.
+    obj[v.name.slice(13)] = {
+      ...v,
+      name: v.name.slice(1),
+      startedAt: new Date(v.startedAt),
+      finishedAt: new Date(v.finishedAt),
+    };
 
-      return obj;
-    },
-    {} as DockersInfo
-  );
+    return obj;
+  }, {} as DockersInfo);
 
   dockersInfoCache = dockersInfo;
 
