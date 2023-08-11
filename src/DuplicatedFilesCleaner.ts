@@ -52,10 +52,10 @@ export default class DuplicatedFilesCleaner {
   /**
    * Get the nodes' files for each shard.
    * @param strip Whether to strip the files or not according to filesToStripIfOnline and filesToStripIfOffline or not. Default is true.
-   * @param nodes The nodes to get the files from. Default is all nodes.
+   * @param nodes The docker indexes to get the files from. Default is all nodes.
    * @param useCache Use the cache if it exists. Default is false.
    * @param allShards Get the files of all shards possible, not just the ones in the instructions. Default is false.
-   * @return First key is the shard name, second key is the node number, and the value is an array of files.
+   * @return First key is the shard name, second key is the docker index, and the value is an array of files.
    */
   declare getFilesOfNodes: OmitThisParameter<typeof getFilesOfNodes>;
 

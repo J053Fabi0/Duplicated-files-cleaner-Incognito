@@ -1,11 +1,11 @@
 import { join } from "../deps.ts";
 import { dockerPs } from "../utils/commands.ts";
-import { shardsNames } from "../types/shards.type.ts";
 import getFiles, { LDBFile } from "../utils/getFiles.ts";
+import { shardsNames, ShardsNames } from "../types/shards.type.ts";
 import DuplicatedFilesCleaner from "../src/DuplicatedFilesCleaner.ts";
 
 let cached = false;
-const filesOfNodes: Record<string, Record<string, LDBFile[]>> = {};
+const filesOfNodes = {} as Record<ShardsNames, Record<string, LDBFile[]>>;
 
 export default async function getFilesOfNodes(
   this: DuplicatedFilesCleaner,
