@@ -32,12 +32,12 @@ export default async function copyData(
 
     const allLdbFiles = getFiles(fromShardPath);
 
-    const ldbFiles = allLdbFiles.slice(this.filesToStripIfOffline >= 0 ? this.filesToStripIfOffline : 0);
+    const ldbFiles = allLdbFiles;
     const otherFiles = [
       // the files that are not ldb files
       ...[...Deno.readDirSync(fromShardPath)].filter((file) => !file.name.endsWith(".ldb")),
       // the files that were sliced from allLdbFiles
-      ...allLdbFiles.slice(0, this.filesToStripIfOffline >= 0 ? this.filesToStripIfOffline : 0),
+      ...allLdbFiles,
     ];
 
     console.log("Emptying the destination directory");
