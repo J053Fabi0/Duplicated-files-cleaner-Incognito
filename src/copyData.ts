@@ -25,19 +25,19 @@ export default async function copyData(
   if (normalizedShards.length === 0) normalizedShards.push("beacon");
 
   for (const shard of normalizedShards) {
-    console.log(`Moving ${shard}'s files from ${from} to ${to}`);
+    console.log(`Copying ${shard}'s files from ${from} to ${to}`);
 
     const fromShardPath = join(this.homePath, `/node_data_${from}/mainnet/block/${shard}`);
     const toShardPath = join(this.homePath, `/node_data_${to}/mainnet/block/${shard}`);
 
     const allLdbFiles = getFiles(fromShardPath);
 
-    const ldbFiles = allLdbFiles;
+    const ldbFiles = allLdbFiles.slice(this.filesToStrip >= 0 ? this.filesToStrip : 0);
     const otherFiles = [
       // the files that are not ldb files
       ...[...Deno.readDirSync(fromShardPath)].filter((file) => !file.name.endsWith(".ldb")),
       // the files that were sliced from allLdbFiles
-      ...allLdbFiles,
+      ...allLdbFiles.slice(0, this.filesToStrip >= 0 ? this.filesToStrip : 0),
     ];
 
     console.log("Emptying the destination directory");

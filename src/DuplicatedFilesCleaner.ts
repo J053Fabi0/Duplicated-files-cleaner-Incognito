@@ -6,6 +6,7 @@ import getFilesOfNodes from "../utils/getFilesOfNodes.ts";
 
 export default class DuplicatedFilesCleaner {
   homePath: string;
+  filesToStrip: number;
   dockerIndexes: number[];
   minFilesToConsiderShard: number;
 
@@ -13,8 +14,10 @@ export default class DuplicatedFilesCleaner {
     homePath,
     dockerIndexes,
     minFilesToConsiderShard = 30,
+    filesToStrip = 20_000,
   }: Omit<Constants, "fileSystem" | "validatorPublicKeys">) {
     this.homePath = homePath;
+    this.filesToStrip = filesToStrip;
     this.dockerIndexes = dockerIndexes;
     this.minFilesToConsiderShard = minFilesToConsiderShard;
   }
