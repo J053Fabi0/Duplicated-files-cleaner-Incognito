@@ -21,7 +21,7 @@ export default class DuplicatedFilesCleaner {
 
   /**
    * Get information of nodes
-   * @param nodes The nodes to get the info from. If not provided, it will get the info from all nodes.
+   * @param nodes The nodes to get the info from. If not provided, it will get the info from all nodes. Docker indexes.
    * @returns An object with the first key being the node index and the second key being the shard name. The value is the number of files in the shards that have more than 30 files. It also includes the docker status of the node.
    */
   declare getInfo: OmitThisParameter<typeof getInfo>;

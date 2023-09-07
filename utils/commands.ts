@@ -45,6 +45,8 @@ interface RawDockerInfo {
   finishedAt: string;
   /** Whether the container is restarting. */
   restarting: boolean;
+  /** The tag of the image */
+  tag: string;
 }
 
 export interface DockerInfo extends Omit<RawDockerInfo, "startedAt" | "finishedAt"> {
@@ -74,7 +76,8 @@ export async function dockerPs(nodes: (number | string)[] | Set<number | string>
       '"running":     {{.State.Running}},' +
       '"restarting":  {{.State.Restarting}},' +
       '"startedAt":  "{{.State.StartedAt}}",' +
-      '"finishedAt": "{{.State.FinishedAt}}"' +
+      '"finishedAt": "{{.State.FinishedAt}},"' +
+      '"tag":        "{{.Config.Image}}"' +
       "},",
   ];
 
@@ -98,6 +101,7 @@ export async function dockerPs(nodes: (number | string)[] | Set<number | string>
     obj[v.name.slice(13)] = {
       ...v,
       name: v.name.slice(1),
+      tag: v.tag.split(":")[1],
       startedAt: new Date(v.startedAt),
       finishedAt: new Date(v.finishedAt),
     };
