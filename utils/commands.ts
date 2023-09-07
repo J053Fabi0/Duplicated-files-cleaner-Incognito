@@ -76,7 +76,7 @@ export async function dockerPs(nodes: (number | string)[] | Set<number | string>
       '"running":     {{.State.Running}},' +
       '"restarting":  {{.State.Restarting}},' +
       '"startedAt":  "{{.State.StartedAt}}",' +
-      '"finishedAt": "{{.State.FinishedAt}},"' +
+      '"finishedAt": "{{.State.FinishedAt}}",' +
       '"tag":        "{{.Config.Image}}"' +
       "},",
   ];
