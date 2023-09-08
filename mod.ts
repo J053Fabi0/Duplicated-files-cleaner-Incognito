@@ -10,6 +10,11 @@ export { dockerPs, docker, df, cp } from "./utils/commands.ts";
 export { default as repeatUntilNoError } from "./utils/repeatUntilNoError.ts";
 export { shardsNames, shardsNumbers, shardsNumbersStr } from "./types/shards.type.ts";
 export { default as normalizeShards, normalizeShard } from "./utils/normalizeShards.ts";
+export {
+  yieldPromisesFunctions,
+  iteratePromisesYielded,
+  default as iteratePromisesInChunks,
+} from "./utils/promisesYieldedInChunks.ts";
 
 // Types
 export type { Info } from "./src/getInfo.ts";
