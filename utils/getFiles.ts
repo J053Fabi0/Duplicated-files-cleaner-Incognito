@@ -1,7 +1,7 @@
 export type LDBFile = Deno.DirEntry & { number: number };
 
 /**
- * Get all the .ldb files from a folder.
+ * Get all the .ldb files from a folder sorted by number from highest to lowest.
  * @param path The path to the folder.
  * @returns The .ldb files.
  */

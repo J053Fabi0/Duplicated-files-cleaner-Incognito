@@ -2,7 +2,7 @@ export type ValidatorPublicKeys = Record<number | string, string>;
 
 export default interface Constants {
   homePath: string;
-  filesToStrip?: number;
+  filesToCopy?: number;
   dockerIndexes: number[];
   minFilesToConsiderShard?: number;
 }

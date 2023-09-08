@@ -37,12 +37,12 @@ export default async function copyData(
 
     const allLdbFiles = getFiles(fromShardPath);
 
-    const ldbFiles = allLdbFiles.slice(this.filesToStrip >= 0 ? this.filesToStrip : 0);
-    const otherFiles = [
+    const filesToHardLink = allLdbFiles.slice(Math.max(this.filesToCopy, 0));
+    const filesToCopy = [
       // the files that are not ldb files
       ...[...Deno.readDirSync(fromShardPath)].filter((file) => !file.name.endsWith(".ldb")),
       // the files that were sliced from allLdbFiles
-      ...allLdbFiles.slice(0, this.filesToStrip >= 0 ? this.filesToStrip : 0),
+      ...allLdbFiles.slice(0, Math.max(this.filesToCopy, 0)),
     ];
 
     console.log("Emptying the destination directory");
@@ -52,20 +52,20 @@ export default async function copyData(
 
     console.log("Copying the ldb files with hard links");
     await Promise.all(
-      ldbFiles.map((file) => Deno.link(join(fromShardPath, file.name), join(toShardPath, file.name)))
+      filesToHardLink.map((file) => Deno.link(join(fromShardPath, file.name), join(toShardPath, file.name)))
     );
 
     let i = 0;
     if (logProgressBar)
       (async () => {
         while (i !== Infinity) {
-          bars.render([{ completed: i, total: otherFiles.length, text: "\n" }]);
+          bars.render([{ completed: i, total: filesToCopy.length, text: "\n" }]);
           await new Promise((resolve) => setTimeout(resolve, 150));
         }
       })();
 
     console.log("Copying the rest of the files with copy, including directories");
-    const filesWithFullPath = otherFiles.map((f) => join(fromShardPath, f.name));
+    const filesWithFullPath = filesToCopy.map((f) => join(fromShardPath, f.name));
     const promises = _.chunk(filesWithFullPath, filesToCopyAtOnce).map(
       (files) => () => cp(["-r", "--preserve=all", ...files, toShardPath])
     );
@@ -73,7 +73,7 @@ export default async function copyData(
 
     i = Infinity;
     if (logProgressBar) {
-      bars.render([{ completed: otherFiles.length, total: otherFiles.length, text: "\n" }]);
+      bars.render([{ completed: filesToCopy.length, total: filesToCopy.length, text: "\n" }]);
       bars.end();
     }
   }
