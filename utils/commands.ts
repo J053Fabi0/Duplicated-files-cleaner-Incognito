@@ -2,6 +2,7 @@ import binaryWrapper from "./binaryWrapper.ts";
 import repeatUntilNoError from "./repeatUntilNoError.ts";
 
 export const df = binaryWrapper("df");
+export const cp = binaryWrapper("cp");
 
 const _docker = binaryWrapper("docker");
 /**

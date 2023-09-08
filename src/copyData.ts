@@ -1,3 +1,4 @@
+import { cp } from "../utils/commands.ts";
 import getFiles from "../utils/getFiles.ts";
 import { join, MultiProgressBar } from "../deps.ts";
 import normalizeShards from "../utils/normalizeShards.ts";
@@ -59,10 +60,8 @@ export default async function copyData(
         }
       })();
 
-    console.log("Copying the rest of the files with copy, including directories\n");
-    await Promise.all(
-      otherFiles.map((file) => copyFileOrDir(fromShardPath, toShardPath, file).finally(() => void i++))
-    );
+    console.log("Copying the rest of the files with copy, including directories");
+    await cp([...otherFiles.map((f) => `${join(fromShardPath, f.name)}`), toShardPath]);
 
     i = Infinity;
     if (logProgressBar) {

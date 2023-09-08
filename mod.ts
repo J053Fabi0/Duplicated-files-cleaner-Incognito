@@ -6,7 +6,7 @@ export { default as binaryWrapper } from "./utils/binaryWrapper.ts";
 
 export { copyFileOrDir } from "./src/copyData.ts";
 export { default as getFiles } from "./utils/getFiles.ts";
-export { dockerPs, docker, df } from "./utils/commands.ts";
+export { dockerPs, docker, df, cp } from "./utils/commands.ts";
 export { default as repeatUntilNoError } from "./utils/repeatUntilNoError.ts";
 export { shardsNames, shardsNumbers, shardsNumbersStr } from "./types/shards.type.ts";
 export { default as normalizeShards, normalizeShard } from "./utils/normalizeShards.ts";
