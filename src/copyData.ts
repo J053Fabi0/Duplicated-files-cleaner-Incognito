@@ -1,10 +1,10 @@
 import { lodash as _ } from "lodash";
 import { cp } from "../utils/commands.ts";
 import getFiles from "../utils/getFiles.ts";
+import maxPromises from "../utils/maxPromises.ts";
 import { join, MultiProgressBar } from "../deps.ts";
 import normalizeShards from "../utils/normalizeShards.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
-import iteratePromisesInChunks from "../utils/promisesYieldedInChunks.ts";
 import ShardsNumbers, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
 
 const filesToCopyAtOnce = 50;
@@ -69,7 +69,7 @@ export default async function copyData(
     const promises = _.chunk(filesWithFullPath, filesToCopyAtOnce).map(
       (files) => () => cp(["-r", "--preserve=all", ...files, toShardPath])
     );
-    await iteratePromisesInChunks(promises, 20, () => (i += filesToCopyAtOnce));
+    await maxPromises(promises, 20);
 
     i = Infinity;
     if (logProgressBar) {
