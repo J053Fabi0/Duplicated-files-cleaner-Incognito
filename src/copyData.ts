@@ -4,7 +4,10 @@ import getFiles from "../utils/getFiles.ts";
 import { join, MultiProgressBar } from "../deps.ts";
 import normalizeShards from "../utils/normalizeShards.ts";
 import DuplicatedFilesCleaner from "./DuplicatedFilesCleaner.ts";
+import iteratePromisesInChunks from "../utils/promisesYieldedInChunks.ts";
 import ShardsNumbers, { ShardsNames, ShardsStr } from "../types/shards.type.ts";
+
+const filesToCopyAtOnce = 50;
 
 const bars = new MultiProgressBar({
   complete: "#",
@@ -63,7 +66,10 @@ export default async function copyData(
 
     console.log("Copying the rest of the files with copy, including directories");
     const filesWithFullPath = otherFiles.map((f) => join(fromShardPath, f.name));
-    await Promise.all(_.chunk(filesWithFullPath, 100).map((files) => cp([...files, toShardPath])));
+    const promises = _.chunk(filesWithFullPath, filesToCopyAtOnce).map(
+      (files) => () => cp(["-r", "--preserve=all", ...files, toShardPath])
+    );
+    await iteratePromisesInChunks(promises, 20, () => (i += filesToCopyAtOnce));
 
     i = Infinity;
     if (logProgressBar) {
