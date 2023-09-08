@@ -2,5 +2,8 @@
   "tasks": {
     "run": "deno run --allow-net --allow-write --allow-run --allow-env --allow-read index.ts",
     "check": "deno check mod.ts"
+  },
+  "imports": {
+    "lodash": "https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts"
   }
 }

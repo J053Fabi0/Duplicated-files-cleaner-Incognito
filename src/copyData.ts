@@ -1,3 +1,4 @@
+import { lodash as _ } from "lodash";
 import { cp } from "../utils/commands.ts";
 import getFiles from "../utils/getFiles.ts";
 import { join, MultiProgressBar } from "../deps.ts";
@@ -61,7 +62,8 @@ export default async function copyData(
       })();
 
     console.log("Copying the rest of the files with copy, including directories");
-    await cp([...otherFiles.map((f) => `${join(fromShardPath, f.name)}`), toShardPath]);
+    const filesWithFullPath = otherFiles.map((f) => join(fromShardPath, f.name));
+    await Promise.all(_.chunk(filesWithFullPath, 100).map((files) => cp([...files, toShardPath])));
 
     i = Infinity;
     if (logProgressBar) {
